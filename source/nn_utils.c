@@ -140,7 +140,7 @@ int nn_utils_find_max_index_int(int *in, int len)
 }
 
 /*******************************************************************************
-* Function Name: nn_utils_convert_int_to_flt
+* Function Name: nn_utils_convert_int16_to_flt
 ********************************************************************************
 * Summary:
 *   Convert an fixed-point (integer) value to floating-point based on the 
@@ -162,6 +162,38 @@ void nn_utils_convert_int16_to_flt(int16_t *in, float *out, int len, int q)
     /* Calculate the floating Q normalization value */
     float q_norm = 1.0f / (float) (1 << q);
     
+    blk_cnt = len;
+
+    while (blk_cnt > 0)
+    {
+        *out++ = ((float) (*in++)) * q_norm;
+        blk_cnt--;
+    }
+}
+
+/*******************************************************************************
+* Function Name: nn_utils_convert_int8_to_flt
+********************************************************************************
+* Summary:
+*   Convert an fixed-point (integer) value to floating-point based on the
+*   q_norm.
+*
+* Parameters:
+*   in: input array in fixed-point
+*   out: output array in floating-point
+*   len: array size
+*   q: Q value for the input array
+*
+* Return:
+*   Index of the maximum value
+*******************************************************************************/
+void nn_utils_convert_int8_to_flt(int8_t *in, float *out, int len, int q)
+{
+    int blk_cnt;
+
+    /* Calculate the floating Q normalization value */
+    float q_norm = 1.0f / (float) (1 << q);
+
     blk_cnt = len;
 
     while (blk_cnt > 0)

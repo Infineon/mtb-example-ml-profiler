@@ -1,1 +1,1 @@
-{"cycles_flt": 91000, "model_mem_flt": 52032, "scratch_flt": 168, "cycles_int16": 50584, "model_mem_int16": 26028, "scratch_int16": 168, "cycles_int8": 70792, "scratch_int8": 168, "model_mem_int8": 13026}
+{"cycles_flt": 91000, "scratch_flt": 168, "model_mem_flt": 52032, "cycles_int16x16": 50584, "scratch_int16x16": 168, "model_mem_int16x16": 26028, "cycles_int16x8": 70792, "scratch_int16x8": 168, "model_mem_int16x8": 13026, "cycles_int8x16": 50584, "scratch_int8x16": 168, "model_mem_int8x16": 26028, "cycles_int8x8": 70792, "scratch_int8x8": 168, "model_mem_int8x8": 13026}

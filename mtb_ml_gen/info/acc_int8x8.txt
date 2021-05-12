@@ -1,0 +1,4 @@
+Memory to be allocated for scratch memory       :     1.66 kB
+Memory to be allocated for persistent memory    :     0.30 kB
+Memory size for NN model weights & biases       :    12.75 kB
+Accuracy for 8-bit fixed-point implementation :    99.00

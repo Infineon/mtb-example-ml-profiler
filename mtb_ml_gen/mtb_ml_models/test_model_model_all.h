@@ -13,6 +13,12 @@ const unsigned char test_model_model_prms_bin[] __ALIGNED(4) = {
 };
 unsigned int test_model_model_prms_bin_len = 116;
 
+#ifdef CY_ML_MODEL_MEM
+#define Q(x) #x
+#define QUOTE(x) Q(x)
+CY_SECTION(QUOTE(CY_ML_MODEL_MEM))
+#endif
+
 #if CY_ML_FLOATING_POINT_fltxflt_NN
 unsigned char test_model_model_flt_bin[] __ALIGNED(4) = {
   0x28, 0xcb, 0x00, 0x00, 0x00, 0xc4, 0x00, 0x00, 0x8d, 0x0a, 0x9e, 0xbd, 

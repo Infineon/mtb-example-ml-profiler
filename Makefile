@@ -70,7 +70,7 @@ VERBOSE=
 # int8x8   -- 8-bit fixed-point for the input data and weights
 # int16x8  -- 16-bit fixed-point for the input data and 8-bit for weights
 # int16x16 -- 16-bit fixed-point for the input data and weights
-NN_TYPE=float
+NN_TYPE=int8x8
 
 # Model Name to be loaded to the firmware
 NN_MODEL_NAME="test_model"

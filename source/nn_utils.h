@@ -65,7 +65,8 @@
 *******************************************************************************/
 int  nn_utils_find_max_index_flt(float *in, int len);
 int  nn_utils_find_max_index_int(int *in, int len);
-void nn_utils_convert_int16_to_flt(int16_t *in, float *out, int len, int q_norm);
+void nn_utils_convert_int16_to_flt(int16_t *in, float *out, int len, int q);
+void nn_utils_convert_int8_to_flt(int8_t *in, float *out, int len, int q);
 
 #endif /* NN_UTILS_H */
 

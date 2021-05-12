@@ -17,10 +17,13 @@
     "output_dir": "mtb_ml_gen",
     "target": "CY8C62xA",
     "validation": {
+        "feat_col_count": 784,
+        "feat_col_first": 1,
+        "feat_col_last": 784,
         "inputFormat": "CSV",
-        "inputType": "PRNG",
+        "inputType": "ML",
         "max_samples": 100,
-        "path": "",
+        "path": "test_data/test_data.csv",
         "quantization": {
             "float32": true,
             "int16": true,
@@ -28,7 +31,10 @@
             "int16x8": true,
             "int8": true,
             "int8x8": true
-        }
+        },
+        "target_col_count": 1,
+        "target_col_first": 0,
+        "target_cols": "0"
     },
     "version": 1
 }

@@ -1,7 +1,7 @@
 /******************************************************************************
 * File Name:   main.c
 *
-* Description: This is the source code for the <CE Title> Example
+* Description: This is the source code for the Neural Network Profiler Example
 *              for ModusToolbox.
 *
 * Related Document: See README.md

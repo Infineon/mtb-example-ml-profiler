@@ -217,9 +217,15 @@ cy_rslt_t nn_profiler_run(void)
         /* Get the result */       
         nn_result(&nn_profiler_obj, nn_result_buffer);
 
-#if CY_ML_FIXED_POINT
-        /* Convert fixed-point output to floating-point for visualization/regression */
+#if CY_ML_FIXED_POINT_16_IN
+        /* Convert 16bit fixed-point output to floating-point for visualization/regression */
         nn_utils_convert_int16_to_flt(nn_result_buffer,
+                                      nn_float_buffer,
+                                      nn_profiler_obj.model_xx_info.n_out_classes,
+                                      nn_profiler_obj.in_out_fixed_point_q);
+#elif CY_ML_FIXED_POINT_8_IN
+        /* Convert 8bit fixed-point output to floating-point for visualization/regression */
+        nn_utils_convert_int8_to_flt(nn_result_buffer,
                                       nn_float_buffer,
                                       nn_profiler_obj.model_xx_info.n_out_classes,
                                       nn_profiler_obj.in_out_fixed_point_q);

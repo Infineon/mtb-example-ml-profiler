@@ -121,12 +121,12 @@
 #endif
 #if defined(COMPONENT_ML_INT8x16)
     typedef int8_t              NN_IN_Type;
-    typedef int16_t             NN_OUT_Type;
+    typedef int8_t              NN_OUT_Type;
     typedef int16_t             NN_WGT_Type;
 #endif
 #if defined(COMPONENT_ML_INT8x8)
     typedef int8_t              NN_IN_Type;
-    typedef int16_t             NN_OUT_Type;
+    typedef int8_t              NN_OUT_Type;
     typedef int8_t              NN_WGT_Type;
 #endif
 
