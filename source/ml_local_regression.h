@@ -1,8 +1,8 @@
 /******************************************************************************
-* File Name:   nn_utils.h
+* File Name:   ml_local_regression.h
 *
 * Description: This file contains the function prototypes and constants used
-*   in nn_utils.c.
+*   in ml_local_regression.c.
 *
 * Related Document: See README.md
 *
@@ -39,35 +39,18 @@
 * of such system or application assumes all risk of such use and in doing
 * so agrees to indemnify Cypress against all liability.
 *******************************************************************************/
-#ifndef NN_UTILS_H
-#define NN_UTILS_H
+#ifndef ML_LOCAL_REGRESSION_H
+#define ML_LOCAL_REGRESSION_H
 
-#include <stdint.h>
-
-/******************************************************************************
- * Macros
- *****************************************************************************/
-
-/******************************************************************************
- * Defines
- *****************************************************************************/
-
-/******************************************************************************
- * Typedefs
- *****************************************************************************/
-
-/*******************************************************************************
-* Constants
-*******************************************************************************/
+#include "mtb_ml_model.h"
 
 /*******************************************************************************
 * Functions
 *******************************************************************************/
-int  nn_utils_find_max_index_flt(float *in, int len);
-int  nn_utils_find_max_index_int(int *in, int len);
-void nn_utils_convert_int16_to_flt(int16_t *in, float *out, int len, int q);
-void nn_utils_convert_int8_to_flt(int8_t *in, float *out, int len, int q);
+cy_rslt_t ml_local_regression_init(mtb_ml_profile_config_t profile_cfg,
+                                   mtb_ml_model_bin_t *model_bin);
+cy_rslt_t ml_local_regression_task(void);
 
-#endif /* NN_UTILS_H */
+#endif /* CY_ML_LOCAL_H */
 
 /* [] END OF FILE */

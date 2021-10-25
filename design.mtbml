@@ -13,7 +13,7 @@
             "int8x8": true
         }
     },
-    "name": "test_model",
+    "name": "TEST_MODEL",
     "output_dir": "mtb_ml_gen",
     "target": "CY8C62xA",
     "validation": {
@@ -32,10 +32,12 @@
             "int8": true,
             "int8x8": true
         },
+        "target": {
+            "target_quantization": "16x16"
+        },
         "target_col_count": 1,
         "target_col_first": 0,
         "target_cols": "0"
     },
-    "version": 1
+    "version": 2
 }
-

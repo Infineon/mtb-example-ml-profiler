@@ -70,10 +70,10 @@ VERBOSE=
 # int8x8   -- 8-bit fixed-point for the input data and weights
 # int16x8  -- 16-bit fixed-point for the input data and 8-bit for weights
 # int16x16 -- 16-bit fixed-point for the input data and weights
-NN_TYPE=int8x8
+NN_TYPE=int16x16
 
 # Model Name to be loaded to the firmware
-NN_MODEL_NAME="test_model"
+NN_MODEL_NAME="TEST_MODEL"
 
 # Folder name containing the model and regression data
 NN_MODEL_FOLDER=./mtb_ml_gen
@@ -92,7 +92,7 @@ NN_MODEL_FOLDER=./mtb_ml_gen
 # ... then code in directories named COMPONENT_foo and COMPONENT_bar will be
 # added to the build
 #
-COMPONENTS=FREERTOS
+COMPONENTS=
 
 # Like COMPONENTS, but disable optional code that was enabled by default.
 DISABLE_COMPONENTS=
@@ -108,23 +108,33 @@ SOURCES=
 INCLUDES=$(NN_MODEL_FOLDER)/mtb_ml_regression_data $(NN_MODEL_FOLDER)/mtb_ml_models source
 
 # Add additional defines to the build process (without a leading -D).
-DEFINES=MODEL_NAME=$(NN_MODEL_NAME) ML_PROFILER
+DEFINES=MODEL_NAME=$(NN_MODEL_NAME)
+
+# Determine build host OS so it can be printed
+ifeq ($(OS),Windows_NT)
+  DEFINES += BUILD_HOST=Windows __WIN32__
+else
+  UNAME := $(shell uname -s)
+  ifeq ($(UNAME),Linux)
+    DEFINES += BUILD_HOST=Linux __linux__
+  else ifeq ($(UNAME),Darwin)
+    DEFINES += BUILD_HOST=MacOS __APPLE__
+  else
+    DEFINES += BUILD_HOST=Unknown
+  endif
+endif
 
 # Depending which Neural Network Type, add a specific DEFINE and COMPONENT
 ifeq (float, $(NN_TYPE))
-DEFINES+=CY_ML_FLOATING_POINT_fltxflt_NN=1
 COMPONENTS+=ML_FLOAT32
 endif
 ifeq (int16x16, $(NN_TYPE))
-DEFINES+=CY_ML_FIXED_POINT_16_IN=1 CY_ML_FIXED_POINT_16_NN=1 
 COMPONENTS+=ML_INT16x16
 endif
 ifeq (int16x8, $(NN_TYPE))
-DEFINES+=CY_ML_FIXED_POINT_16_IN=1 CY_ML_FIXED_POINT_8_NN=1 
 COMPONENTS+=ML_INT16x8
 endif
 ifeq (int8x8, $(NN_TYPE))
-DEFINES+=CY_ML_FIXED_POINT_8_IN=1 CY_ML_FIXED_POINT_8_NN=1
 COMPONENTS+=ML_INT8x8
 endif
 

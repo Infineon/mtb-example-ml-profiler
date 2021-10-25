@@ -45,14 +45,31 @@
 #include "cybsp.h"
 #include "cy_retarget_io.h"
 
-#include "FreeRTOS.h"
-#include "task.h"
+#include "elapsed_timer.h"
+#include "mtb_ml_stream.h"
+#include "ml_local_regression.h"
 
-#include "console.h"
+#include MTB_ML_INCLUDE_MODEL_FILE(MODEL_NAME)
 
 /*******************************************************************************
 * Macros
 ********************************************************************************/
+#define USE_STREAM_DATA             0u
+#define USE_LOCAL_DATA              1u
+
+/* Choose the source of regression data. Options:
+ * - USE_STREAM_DATA
+ * - USE_LOCAL_DATA */ 
+#define REGRESSION_DATA_SOURCE      USE_STREAM_DATA
+
+/* Choose which profiling to enable. Options: 
+ * CY_ML_PROFILE_DISABLE
+ * CY_ML_PROFILE_ENABLE_MODEL
+ * CY_ML_PROFILE_ENABLE_LAYER
+ * CY_ML_PROFILE_ENABLE_MODEL_PER_FRAME
+ * CY_ML_PROFILE_ENABLE_LAYER_PER_FRAME
+ * CY_ML_LOG_ENABLE_MODEL_LOG */
+#define PROFILE_CONFIGURATION       CY_ML_PROFILE_ENABLE_MODEL
 
 /*******************************************************************************
 * Function Prototypes
@@ -61,8 +78,6 @@
 /*******************************************************************************
 * Global Variables
 ********************************************************************************/
-/* This enables RTOS aware debugging */
-volatile int uxTopUsedPriority;
 
 /*******************************************************************************
 * Function Name: main
@@ -71,7 +86,8 @@ volatile int uxTopUsedPriority;
 * This is the main function for CM4 CPU. It does...
 *    1. Initializes the BSP.
 *    2. Prints welcome message
-*    3. Starts the scheduler
+*    3. Initialize the regression unit - stream or local
+*    4. Run the regression
 *
 * Parameters:
 *  void
@@ -84,9 +100,6 @@ int main(void)
 {
     cy_rslt_t result;
 
-    /* This enables RTOS aware debugging in OpenOCD */
-    uxTopUsedPriority = configMAX_PRIORITIES - 1 ;
-
     /* Initialize the device and board peripherals */
     result = cybsp_init() ;
     if (result != CY_RSLT_SUCCESS)
@@ -98,7 +111,15 @@ int main(void)
     __enable_irq();
 
     /* Initialize retarget-io to use the debug UART port */
+#if REGRESSION_DATA_SOURCE == USE_LOCAL_DATA
     cy_retarget_io_init(CYBSP_DEBUG_UART_TX, CYBSP_DEBUG_UART_RX, CY_RETARGET_IO_BAUDRATE);
+#else
+    /* Set the baudrate provided by the ML-Middleware (based on host OS) */
+    cy_retarget_io_init(CYBSP_DEBUG_UART_TX, CYBSP_DEBUG_UART_RX, UART_DEFAULT_STREAM_BAUD_RATE);
+#endif
+
+    /* Initialize the elapsed timer */
+    elapsed_timer_init();
 
     /* \x1b[2J\x1b[;H - ANSI ESC sequence for clear screen */
     printf("\x1b[2J\x1b[;H");
@@ -107,27 +128,47 @@ int main(void)
            "Neural Network Profiler "
            "****************** \r\n\n");
 
-    /* Start the FreeRTOS scheduler */
-    vTaskStartScheduler() ;
+    mtb_ml_model_bin_t model_bin = {MTB_ML_MODEL_BIN_DATA(MODEL_NAME)};
+
+#if REGRESSION_DATA_SOURCE == USE_STREAM_DATA
+    mtb_ml_stream_interface_t interface = {CY_ML_INTERFACE_UART, &cy_retarget_io_uart_obj};
+
+    result = mtb_ml_stream_init(&interface, PROFILE_CONFIGURATION, &model_bin);
+#else
+    result = ml_local_regression_init(PROFILE_CONFIGURATION, &model_bin);
+#endif    
+
+    if(result != CY_RSLT_SUCCESS)
+    {
+        printf("ERROR: initialization of the ML profiler failed!\r\n");
+        CY_HALT();
+    }
 
     for (;;)
     {
+#if REGRESSION_DATA_SOURCE == USE_STREAM_DATA
+        result = mtb_ml_stream_task();
+#else
+        result = ml_local_regression_task();
+#endif
 
+        if (result == CY_RSLT_SUCCESS)
+        {
+            printf("\n\rProfiling completed!\n\r");
+        }
+        else
+        {
+            printf("\n\rProfiling task failed!\n\r");
+        }
+
+#if REGRESSION_DATA_SOURCE == USE_LOCAL_DATA
+        /* Only run the local regression once */
+        elapsed_timer_pause();
+        cyhal_system_sleep();
+#endif
+
+        printf("Restarting...\r\n");
     }
-}
-
-
-
-/*******************************************************************************
-* Function Name: vApplicationDaemonTaskStartupHook
-********************************************************************************
-* Summary:
-*   Executes after the scheduler starts. 
-*
-*******************************************************************************/
-void vApplicationDaemonTaskStartupHook(void)
-{
-    console_init();
 }
 
 /* [] END OF FILE */

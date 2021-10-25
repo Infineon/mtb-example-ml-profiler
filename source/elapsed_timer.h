@@ -1,8 +1,8 @@
 /******************************************************************************
-* File Name:   nn_profiler.h
+* File Name:   elapsed_timer.h
 *
 * Description: This file contains the function prototypes and constants used
-*   in nn_profiler.c.
+*   in elapsed_timer.c.
 *
 * Related Document: See README.md
 *
@@ -39,32 +39,27 @@
 * of such system or application assumes all risk of such use and in doing
 * so agrees to indemnify Cypress against all liability.
 *******************************************************************************/
-#ifndef NN_PROFILER_H
-#define NN_PROFILER_H
+#ifndef ELAPSED_TIMER_H
+#define ELAPSED_TIMER_H
 
 #include "cy_result.h"
 
-/******************************************************************************
- * Macros
- *****************************************************************************/
+/* Include the ML related items only if using ML inference middleware */
+#if defined(COMPONENT_ML_FLOAT32) || defined(COMPONENT_ML_INT16x16) || \
+    defined(COMPONENT_ML_INT16x8) || defined(COMPONENT_ML_INT8x8)
+    #include "cy_ml_inference.h"
 
-/******************************************************************************
- * Defines
- *****************************************************************************/
+    #define elapsed_timer_get_tick Cy_ML_Profile_Get_Tsc
+#endif
 
-/******************************************************************************
- * Typedefs
- *****************************************************************************/
-
-/*******************************************************************************
-* Constants
-*******************************************************************************/
+#define elapsed_timer_resume Cy_SysTick_Enable
+#define elapsed_timer_pause  Cy_SysTick_Disable   
 
 /*******************************************************************************
 * Functions
 *******************************************************************************/
-cy_rslt_t nn_profiler_init(void);
-cy_rslt_t nn_profiler_run(void);
+cy_rslt_t elapsed_timer_init(void);
+int elapsed_timer_get_tick(uint32_t *tick);
 
 #endif /* NN_PROFILER_H */
 
