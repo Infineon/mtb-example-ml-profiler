@@ -7,7 +7,7 @@
 #
 ################################################################################
 # \copyright
-# Copyright 2018-2021, Cypress Semiconductor Corporation (an Infineon company)
+# Copyright 2018-2022, Cypress Semiconductor Corporation (an Infineon company)
 # SPDX-License-Identifier: Apache-2.0
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,12 +28,18 @@
 # Basic Configuration
 ################################################################################
 
+# Type of ModusToolbox Makefile Options include:
+#
+# COMBINED    -- Top Level Makefile usually for single standalone application
+# APPLICATION -- Top Level Makefile usually for multi project application
+# PROJECT     -- Project Makefile under Application
+#
+MTB_TYPE=COMBINED
+
 # Target board/hardware (BSP).
 # To change the target, it is recommended to use the Library manager
-# ('make modlibs' from command line), which will also update Eclipse IDE launch
-# configurations. If TARGET is manually edited, ensure TARGET_<BSP>.mtb with a
-# valid URL exists in the application, run 'make getlibs' to fetch BSP contents
-# and update or regenerate launch configurations for your IDE.
+# ('make library-manager' from command line), which will also update Eclipse IDE launch
+# configurations.
 TARGET=CY8CPROTO-062-4343W
 
 # Name of application (used to derive name of final linked file).
@@ -70,13 +76,19 @@ VERBOSE=
 # int8x8   -- 8-bit fixed-point for the input data and weights
 # int16x8  -- 16-bit fixed-point for the input data and 8-bit for weights
 # int16x16 -- 16-bit fixed-point for the input data and weights
-NN_TYPE=int16x16
+NN_TYPE=int8x8
 
 # Model Name to be loaded to the firmware
-NN_MODEL_NAME="TEST_MODEL"
+NN_MODEL_NAME=TEST_MODEL
 
 # Folder name containing the model and regression data
-NN_MODEL_FOLDER=./mtb_ml_gen
+NN_MODEL_FOLDER=mtb_ml_gen
+
+# Choose the inference engine
+# tflm      -- TensorFlow Lite for Microcontrollers inference engine with interpreter
+# tflm_less -- TensorFlow Lite for Microcontrollers inference engine interpreter-less
+# ifx       -- Infineon ModusToolbox ML inference engine
+NN_INFERENCE_ENGINE=tflm
 
 ################################################################################
 # Advanced Configuration
@@ -92,7 +104,7 @@ NN_MODEL_FOLDER=./mtb_ml_gen
 # ... then code in directories named COMPONENT_foo and COMPONENT_bar will be
 # added to the build
 #
-COMPONENTS=
+COMPONENTS=ML_MW_STREAM
 
 # Like COMPONENTS, but disable optional code that was enabled by default.
 DISABLE_COMPONENTS=
@@ -103,6 +115,19 @@ DISABLE_COMPONENTS=
 # by default, or otherwise not found by the build system.
 SOURCES=
 
+# Select only the regression and model files that belong to the desired
+# settings. 
+MODEL_PREFIX=$(subst $\",,$(NN_MODEL_NAME))
+CY_IGNORE+=$(NN_MODEL_FOLDER)
+# Add the model file based on the inference and data types
+SOURCES+=$(wildcard $(NN_MODEL_FOLDER)/mtb_ml_models/$(MODEL_PREFIX)_$(NN_INFERENCE_ENGINE)_model_$(NN_TYPE).c*)
+# Add the regression files
+ifeq (ifx, $(NN_INFERENCE_ENGINE))
+SOURCES+=$(wildcard $(NN_MODEL_FOLDER)/mtb_ml_regression_data/$(MODEL_PREFIX)_$(NN_INFERENCE_ENGINE)_*_data_$(NN_TYPE).c)
+else
+SOURCES+=$(wildcard $(NN_MODEL_FOLDER)/mtb_ml_regression_data/$(MODEL_PREFIX)_tflm_*_data_$(NN_TYPE).c)
+endif
+
 # Like SOURCES, but for include directories. Value should be paths to
 # directories (without a leading -I).
 INCLUDES=$(NN_MODEL_FOLDER)/mtb_ml_regression_data $(NN_MODEL_FOLDER)/mtb_ml_models source
@@ -110,13 +135,28 @@ INCLUDES=$(NN_MODEL_FOLDER)/mtb_ml_regression_data $(NN_MODEL_FOLDER)/mtb_ml_mod
 # Add additional defines to the build process (without a leading -D).
 DEFINES=MODEL_NAME=$(NN_MODEL_NAME)
 
+# Add additional define to select the inference engine
+ifeq (tflm, $(NN_INFERENCE_ENGINE))
+COMPONENTS+=ML_TFLM_INTERPRETER IFX_CMSIS_NN
+DEFINES+=TF_LITE_STATIC_MEMORY
+endif
+
+ifeq (tflm_less, $(NN_INFERENCE_ENGINE))
+COMPONENTS+=ML_TFLM_INTERPRETER_LESS IFX_CMSIS_NN
+DEFINES+=TF_LITE_STATIC_MEMORY TF_LITE_MICRO_USE_OFFLINE_OP_USER_DATA
+endif
+
+ifeq (ifx, $(NN_INFERENCE_ENGINE))
+COMPONENTS+=ML_IFX IFX_CMSIS_NN
+endif
+
 # Determine build host OS so it can be printed
 ifeq ($(OS),Windows_NT)
-  DEFINES += BUILD_HOST=Windows __WIN32__
+  DEFINES += BUILD_HOST=Windows 
 else
   UNAME := $(shell uname -s)
   ifeq ($(UNAME),Linux)
-    DEFINES += BUILD_HOST=Linux __linux__
+    DEFINES += BUILD_HOST=Linux 
   else ifeq ($(UNAME),Darwin)
     DEFINES += BUILD_HOST=MacOS __APPLE__
   else

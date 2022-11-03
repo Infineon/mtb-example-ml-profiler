@@ -8,7 +8,7 @@
 *
 *
 *******************************************************************************
-* Copyright 2021, Cypress Semiconductor Corporation (an Infineon company) or
+* Copyright 2021-2022, Cypress Semiconductor Corporation (an Infineon company) or
 * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
 *
 * This software, including source code, documentation and related
@@ -41,6 +41,7 @@
 *******************************************************************************/
 #include "ml_local_regression.h"
 #include "mtb_ml_utils.h"
+#include "mtb_ml_dataset.h"
 
 #include "cyhal.h"
 
@@ -71,7 +72,7 @@ static mtb_ml_model_t *model_obj;
 static MTB_ML_DATA_T *result_buffer;
 
 /* Model Output Size */
-static uint32_t model_output_size;
+static int model_output_size;
 
 /*******************************************************************************
 * Local Functions
@@ -108,17 +109,10 @@ cy_rslt_t ml_local_regression_init(mtb_ml_profile_config_t profile_cfg,
 
     mtb_ml_model_profile_config(model_obj, profile_cfg);
 
-    model_output_size = mtb_ml_model_get_output_size(model_obj);
-
-    /* Allocate memory for the output buffers */
-    result_buffer = (MTB_ML_DATA_T *) malloc(model_output_size * sizeof(MTB_ML_DATA_T));
-    if (result_buffer == NULL)
-    {
-        return MTB_ML_RESULT_ALLOC_ERR;
-    };
+    mtb_ml_model_get_output(model_obj, &result_buffer, &model_output_size);
 
     /* Print information about the model */
-    mtb_ml_model_info(model_obj, model_bin);
+    mtb_ml_utils_print_model_info(model_obj);
     
     return CY_RSLT_SUCCESS;
 }
@@ -136,33 +130,40 @@ cy_rslt_t ml_local_regression_task(void)
 {
     /* Regression pointers */
     MTB_ML_DATA_T  *input_reference;
-    int32_t        *output_reference;
-
+    MTB_ML_DATA_T  *output_reference;
+       
     uint32_t     num_loop;
     uint32_t     input_size;
     uint32_t     correct_result = 0;
     bool         test_result;
     uint32_t     total_count = 0;
 
+    /* Parse input data information: 
+     * - Data type (TFLM only)
+     * - Number of samples
+     * - Frame size
+     * - Q Factor (IFX only)
+     */
+    mtb_ml_x_file_header_t *x_file_header = (mtb_ml_x_file_header_t *) MTB_ML_MODEL_X_DATA_BIN(MODEL_NAME);
+
     /* Point to regression data */
-    input_reference  = (MTB_ML_DATA_T *) MTB_ML_MODEL_X_DATA_BIN(MODEL_NAME);
-    output_reference = (int32_t *) MTB_ML_MODEL_Y_DATA_BIN(MODEL_NAME);
+    input_reference  = (MTB_ML_DATA_T *) (((uint32_t) x_file_header) + sizeof(*x_file_header));
+    output_reference = (MTB_ML_DATA_T *) MTB_ML_MODEL_Y_DATA_BIN(MODEL_NAME);
 
     /* Get the number of loops for this regression */
-    num_loop = *((int *) input_reference); 
-    input_reference += (sizeof(int)/sizeof(MTB_ML_DATA_T));
+    num_loop = x_file_header->num_of_samples;
 
     /* Get the number of inputs of the NN */
-    input_size = *((int *) input_reference); 
-    input_reference += (sizeof(int)/sizeof(MTB_ML_DATA_T));
+    input_size = x_file_header->frame_size;
 
-    /* If using Fixed-point, get the Q value */
+    /* If using Fixed-point and IFX engine, get and set the Q fraction bits */
 #if !COMPONENT_ML_FLOAT32
-    uint32_t q_format = *((int *) input_reference);
-    input_reference += (sizeof(int)/sizeof(MTB_ML_DATA_T));
+    #ifdef COMPONENT_ML_IFX
+        uint32_t q_format = x_file_header->q_factor;
+        mtb_ml_model_set_input_q_fraction_bits(model_obj, q_format);
+    #endif
 
-    mtb_ml_model_set_input_q_fraction_bits(model_obj, q_format);
-#endif
+#endif /* #if !COMPONENT_ML_FLOAT32 */
 
     if (input_size != mtb_ml_model_get_input_size(model_obj))
     {
@@ -174,18 +175,18 @@ cy_rslt_t ml_local_regression_task(void)
     /* The following loop runs for number of examples used in regression */
     for (int j = 0; j < num_loop; j++)
     {
-        mtb_ml_model_run(model_obj, input_reference, result_buffer);
+        mtb_ml_model_run(model_obj, input_reference);
 
         /* Check if the results are accurate enough */
         if (mtb_ml_utils_find_max(result_buffer, model_output_size) == 
-            mtb_ml_utils_find_max_int32(output_reference, model_output_size))
+            mtb_ml_utils_find_max(output_reference, model_output_size))
         {
             correct_result++;
         }
 
         /* Increment buffers */
         input_reference  += input_size;
-        output_reference += mtb_ml_model_get_output_size(model_obj);
+        output_reference += model_output_size;
 
         total_count++;
     }

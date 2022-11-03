@@ -8,7 +8,7 @@
 *
 *
 *******************************************************************************
-* Copyright 2021, Cypress Semiconductor Corporation (an Infineon company) or
+* Copyright 2021-2022, Cypress Semiconductor Corporation (an Infineon company) or
 * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
 *
 * This software, including source code, documentation and related
@@ -47,9 +47,9 @@
 /* Include the ML related items only if using ML inference middleware */
 #if defined(COMPONENT_ML_FLOAT32) || defined(COMPONENT_ML_INT16x16) || \
     defined(COMPONENT_ML_INT16x8) || defined(COMPONENT_ML_INT8x8)
-    #include "cy_ml_inference.h"
 
-    #define elapsed_timer_get_tick Cy_ML_Profile_Get_Tsc
+    #define elapsed_timer_get_tick mtb_ml_model_profile_get_tsc
+    
 #endif
 
 #define elapsed_timer_resume Cy_SysTick_Enable

@@ -8,7 +8,7 @@
 *
 *
 *******************************************************************************
-* Copyright 2021, Cypress Semiconductor Corporation (an Infineon company) or
+* Copyright 2021-2022, Cypress Semiconductor Corporation (an Infineon company) or
 * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
 *
 * This software, including source code, documentation and related
@@ -63,13 +63,13 @@
 #define REGRESSION_DATA_SOURCE      USE_STREAM_DATA
 
 /* Choose which profiling to enable. Options: 
- * CY_ML_PROFILE_DISABLE
- * CY_ML_PROFILE_ENABLE_MODEL
- * CY_ML_PROFILE_ENABLE_LAYER
- * CY_ML_PROFILE_ENABLE_MODEL_PER_FRAME
- * CY_ML_PROFILE_ENABLE_LAYER_PER_FRAME
- * CY_ML_LOG_ENABLE_MODEL_LOG */
-#define PROFILE_CONFIGURATION       CY_ML_PROFILE_ENABLE_MODEL
+ *  MTB_ML_PROFILE_DISABLE
+ *  MTB_ML_PROFILE_ENABLE_MODEL
+ *  MTB_ML_PROFILE_ENABLE_LAYER
+ *  MTB_ML_PROFILE_ENABLE_MODEL_PER_FRAME
+ *  MTB_ML_PROFILE_ENABLE_LAYER_PER_FRAME
+ *  MTB_ML_LOG_ENABLE_MODEL_LOG */
+#define PROFILE_CONFIGURATION       MTB_ML_PROFILE_ENABLE_MODEL
 
 /*******************************************************************************
 * Function Prototypes
@@ -164,7 +164,7 @@ int main(void)
 #if REGRESSION_DATA_SOURCE == USE_LOCAL_DATA
         /* Only run the local regression once */
         elapsed_timer_pause();
-        cyhal_system_sleep();
+        cyhal_syspm_sleep();
 #endif
 
         printf("Restarting...\r\n");
