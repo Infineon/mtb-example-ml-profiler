@@ -178,6 +178,13 @@ ifeq (int8x8, $(NN_TYPE))
 COMPONENTS+=ML_INT8x8
 endif
 
+# Check if IAR is used with TFLM. If yes, trigger an error
+ifeq ($(NN_INFERENCE_ENGINE), $(filter $(NN_INFERENCE_ENGINE),tflm tflm_less))
+   ifeq ($(TOOLCHAIN), IAR)
+      $(error Only GCC_ARM and ARM toolchains are supported for TFLM inference engine)
+   endif
+endif
+
 # Select softfp or hardfp floating point. Default is softfp.
 VFP_SELECT=hardfp
 

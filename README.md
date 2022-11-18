@@ -12,14 +12,14 @@ For details about the ModusToolbox&trade; machine learning solution, see this [l
 
 [View this README on GitHub.](https://github.com/Infineon/mtb-example-ml-profiler)
 
-[Provide feedback on this code example.](https://cypress.co1.qualtrics.com/jfe/form/SV_1NTns53sK2yiljn?Q_EED=eyJVbmlxdWUgRG9jIElkIjoiQ0UyMzI1NTEiLCJTcGVjIE51bWJlciI6IjAwMi0zMjU1MSIsIkRvYyBUaXRsZSI6Ik1hY2hpbmUgbGVhcm5pbmc6IE5ldXJhbCBuZXR3b3JrIHByb2ZpbGVyIiwicmlkIjoicmxvcyIsIkRvYyB2ZXJzaW9uIjoiMy4wLjAiLCJEb2MgTGFuZ3VhZ2UiOiJFbmdsaXNoIiwiRG9jIERpdmlzaW9uIjoiTUNEIiwiRG9jIEJVIjoiSUNXIiwiRG9jIEZhbWlseSI6IlBTT0MifQ==)
+[Provide feedback on this code example.](https://cypress.co1.qualtrics.com/jfe/form/SV_1NTns53sK2yiljn?Q_EED=eyJVbmlxdWUgRG9jIElkIjoiQ0UyMzI1NTEiLCJTcGVjIE51bWJlciI6IjAwMi0zMjU1MSIsIkRvYyBUaXRsZSI6Ik1hY2hpbmUgbGVhcm5pbmc6IE5ldXJhbCBuZXR3b3JrIHByb2ZpbGVyIiwicmlkIjoicmxvcyIsIkRvYyB2ZXJzaW9uIjoiMy4xLjAiLCJEb2MgTGFuZ3VhZ2UiOiJFbmdsaXNoIiwiRG9jIERpdmlzaW9uIjoiTUNEIiwiRG9jIEJVIjoiSUNXIiwiRG9jIEZhbWlseSI6IlBTT0MifQ==)
 
 
 ## Requirements
 
 - [ModusToolbox&trade; software](https://www.infineon.com/cms/en/design-support/tools/sdk/modustoolbox-software/) v3.0 or later (tested with v3.0)
-- [ModusToolbox Machine Learning Pack](https://softwaretools.infineon.com/tools/com.ifx.tb.tool.modustoolboxmachinelearning) v2.0 or later (tested with v2.0)
-- PSoC&trade; 6 Board support package (BSP) minimum required version: 3.0.0
+- [ModusToolbox&trade; Machine Learning Pack](https://softwaretools.infineon.com/tools/com.ifx.tb.tool.modustoolboxpackmachinelearning) v2.0 or later (tested with v2.0)
+- PSoC&trade; 6 Board support package (BSP) minimum required version: 4.0.0
 - Programming language: C and C++
 - Associated parts: All [PSoC&trade; 6 MCU](https://www.infineon.com/cms/en/product/microcontroller/32-bit-psoc-arm-cortex-microcontroller/psoc-6-32-bit-arm-cortex-m4-mcu/) parts
 
@@ -28,8 +28,9 @@ For details about the ModusToolbox&trade; machine learning solution, see this [l
 
 - GNU Arm® embedded compiler v10.3.1 (`GCC_ARM`) - Default value of `TOOLCHAIN`
 - Arm&reg; compiler v6.16 (`ARM`)
-- IAR C/C++ compiler v9.20.2 (`IAR`)
+- IAR C/C++ compiler v9.30.1 (`IAR`)
 
+**Note:** TensorFlow Lite for Microcontrollers (TFLM) does not support IAR compiler.
 
 ## Supported kits (make variable 'TARGET')
 
@@ -54,9 +55,9 @@ This example uses the board's default configuration. See the kit user guide to e
 
 Install a terminal emulator if you do not have one. Instructions in this document use [Tera Term](https://ttssh2.osdn.jp/index.html.en).
 
-Install the Machine Learning pack using this [link](https://softwaretools.infineon.com/tools/com.ifx.tb.tool.modustoolboxmachinelearning).
+Install the Machine Learning pack using this [link](https://softwaretools.infineon.com/tools/com.ifx.tb.tool.modustoolboxpackmachinelearning). Alternatively, use the [Infineon Developer Center (IDC)](https://www.infineon.com/cms/en/design-support/tools/utilities/infineon-developer-center-idc-launcher/) launcher and search for `ModusToolbox Machine Learning Pack` and install it.
 
-Use the ModusToolbox&trade;-ML configurator tool (from *{ModusToolbox&trade; software install directory}/packs/ModusToolbox-Machine-Learning-Pack/tools/ml-configurator/*) to load a pre-trained NN model and generate C files to be used with this code example. Alternatively, you can launch the configurator tool in Eclipse IDE for ModusToolbox&trade; from the Quick Launch window. For more information, see the [*ModusToolbox&trade; machine learning user guide*](https://www.Infineon.com/ModusToolboxMLUserGuide). 
+Use the ModusToolbox&trade;-ML configurator tool (from *{ModusToolbox&trade; software install directory}/packs/ModusToolbox-Machine-Learning-Pack/tools/ml-configurator/*) to load a pre-trained NN model and generate C files to be used with this code example. Alternatively, you can launch the ML configurator tool in Eclipse IDE for ModusToolbox&trade; from the Quick Launch window; or using the **`make ml-configurator`** command in the console. For more information, see the [*ModusToolbox&trade; machine learning user guide*](https://www.Infineon.com/ModusToolboxMLUserGuide). 
 
 By default, the Makefile uses a model that comes with the code example. The pre-trained NN model is located in the *pretrained_models* folder. You can use the ModusToolbox&trade;-ML configurator to link to this file, or load another model file and generate C files for the target device.
 
@@ -132,7 +133,7 @@ The following example clones the "[Hello world](https://github.com/Infineon/mtb-
    project-creator-cli --board-id CY8CKIT-062-WIFI-BT --app-id mtb-example-psoc6-hello-world --user-app-name MyHelloWorld --target-dir "C:/mtb_projects"
    ```
 
-**Note:** The project-creator-cli tool uses the `git clone` and `make getlibs` commands to fetch the repository and import the required libraries. For details, see the "Project creator tools" section of the [ModusToolbox&trade; software user guide](https://www.cypress.com/ModusToolboxUserGuide) (locally available at *{ModusToolbox&trade; software install directory}/docs_{version}/mtb_user_guide.pdf*).
+**Note:** The project-creator-cli tool uses the `git clone` and `make getlibs` commands to fetch the repository and import the required libraries. For details, see the "Project creator tools" section of the [ModusToolbox&trade; software user guide](https://www.infineon.com/ModusToolboxUserGuide) (locally available at *{ModusToolbox&trade; software install directory}/docs_{version}/mtb_user_guide.pdf*).
 
 </details>
 
@@ -160,7 +161,7 @@ Use one of the following options:
 
    3. Follow the instructions displayed in the terminal to create or import the application as an IDE project.
 
-For a list of supported IDEs and more details, see the "Exporting to IDEs" section of the [ModusToolbox&trade; software user guide](https://www.cypress.com/ModusToolboxUserGuide) (locally available at *{ModusToolbox&trade; software install directory}/docs_{version}/mtb_user_guide.pdf*).
+For a list of supported IDEs and more details, see the "Exporting to IDEs" section of the [ModusToolbox&trade; software user guide](https://www.infineon.com/ModusToolboxUserGuide) (locally available at *{ModusToolbox&trade; software install directory}/docs_{version}/mtb_user_guide.pdf*).
 
 </details>
 
@@ -200,11 +201,12 @@ If using a PSoC&trade; 64 "Secure" MCU kit (like CY8CKIT-064B0S2-4343W), the PSo
 
 5. If using streaming regression data (default option), open the ModusToolbox&trade;-ML configurator tool. Open the *design.mtbml* file and click **Validate on Target**. Select the KitProg COM port (ensure that no other software has the COM port open) and check the *Quantization* that matches the **NN_TYPE** set in the Makefile. Click **Validate**.
 
-5. If using the ModusToolbox&trade;-ML configurator tool, the results of the validation are printed on the tool's console. Log files for the profiling are stored in the following files:
+5. If using the ModusToolbox&trade;-ML configurator tool, the results of the validation are printed on the tool's console. Log files for the profiling are stored in the following files (located at *`NN_MODEL_FOLDER`/info_target/* folder):
 
+   - *device_log.txt*: All messages exchanged between the configurator tool and the device.
    - *profiler_frame_log.txt*: Per-frame profile information
    - *profiler_info_log.txt*: Per-model profile information
-   - *profiler_output_log.txt*: Per-frame output log
+   - *profiler_output_log.txt*: Per-frame output log (not currently supported, but output log can be viewed in the *device_log.txt*).
 
    You can choose the type of profiling/debugging data to be printed by setting the `PROFILE_CONFIGURATION` macro in *main.c*.
 
@@ -213,7 +215,7 @@ If using a PSoC&trade; 64 "Secure" MCU kit (like CY8CKIT-064B0S2-4343W), the PSo
 
 ## Debugging
 
-You can debug the example to step through the code. In the IDE, use the **\<Application Name> Debug (KitProg3_MiniProg4)** configuration in the **Quick Panel**. For details, see the "Program and debug" section in the [Eclipse IDE for ModusToolbox&trade; software user guide](https://www.Infineon.com/ModusToolboxMLUserGuide).
+You can debug the example to step through the code. In the IDE, use the **\<Application Name> Debug (KitProg3_MiniProg4)** configuration in the **Quick Panel**. For details, see the "Program and debug" section in the [Eclipse IDE for ModusToolbox&trade; software user guide](https://www.infineon.com/MTBEclipseIDEUserGuide).
 
 **Note:** **(Only while debugging)** On the CM4 CPU, some code in `main()` may execute before the debugger halts at the beginning of `main()`. This means that some code executes twice – once before the debugger stops execution, and again after the debugger resets the program counter to the beginning of `main()`. See [KBA231071](https://community.infineon.com/t5/Knowledge-Base-Articles/PSoC-6-MCU-Code-in-main-executes-before-the-debugger-halts-at-the-first-line-of/ta-p/253856) to learn about this and for the workaround.
 
@@ -224,7 +226,7 @@ In this example, you must provide a pre-trained NN model with the weights, regre
 
 If you change the output file location in the ModusToolbox&trade;-ML configurator tool, you must also reflect the change in the Makefile (the `NN_MODEL_FOLDER` parameter). The model data is stored as a header file or as a binary file (used for filesystem applications). This example uses header files. Depending the type of the NN model chosen in the Makefile (the `NN_TYPE` parameter), the application uses the files and variables from the following table, where (*KEY* is the output file prefix defined by the ModusToolbox&trade;-ML configurator tool):
 
-**Inference Engine: ifx**
+**Table 1. Inference Engine: ifx**
 
 | Folder name | File name | Variable name | Description |
 | :--------   | :-------- | :------------- | :------------ |
@@ -233,7 +235,7 @@ If you change the output file location in the ModusToolbox&trade;-ML configurato
 
 <br>
 
-**Inference Engine: tflm**
+**Table 2. Inference Engine: tflm**
 
 | Folder name | File name | Variable name | Description |
 | :--------   | :-------- | :------------- | :------------ |
@@ -242,7 +244,7 @@ If you change the output file location in the ModusToolbox&trade;-ML configurato
 
 <br>
 
-**Inference Engine: tflm_less**
+**Table 3. Inference Engine: tflm_less**
 
 | Folder name | File name | Variable name | Description |
 | :--------   | :-------- | :------------- | :------------ |
@@ -266,14 +268,20 @@ This application has an option to choose the source of the regression data in th
    - `USE_STREAM_DATA` – Uses the ModusToolbox&trade;-ML Configurator tool to stream the regression data
    - `USE_LOCAL_DATA` – Uses the files located in *mtb_ml_gen/mtb_ml_regression_data* for the regression data
 
+**Note:** Some devices from the supported kits might not have enough memory to run some of the configurations above, specially if using local regression data. If that occurs, pick another kit with larger memory device, or refer to the ML user guide on how to define the `CY_ML_MODEL_MEM` macro.
+
+**Note:** When using a TFLM int8x8 model with local regression data, the output of the model is compared to quantized reference int8x8 model results. If using the streamed data, the output of the model is compared to a float reference model results. That means the accuracy results might differ between using local data and streamed data.
+
 The application also has an option to choose what type of profiling/debugging data to print/stream. You can set the `PROFILE_CONFIGURATION` to one of the following:
 
-   - `MTB_ML_PROFILE_DISABLE` – Disable profiling
-   - `MTB_ML_PROFILE_ENABLE_MODEL` (default) - Enables model profiling
-   - `MTB_ML_PROFILE_ENABLE_LAYER` – Enables per-layer profiling
-   - `MTB_ML_PROFILE_ENABLE_MODEL_PER_FRAME` – Enables per-frame model profiling
-   - `MTB_ML_PROFILE_ENABLE_LAYER_PER_FRAME` – Enables per-frame layer profiling
-   - `MTB_ML_LOG_ENABLE_MODEL_LOG` – Enables model output
+   | Configuration | Description | Support |
+   | :--------   | :-------- | :------------- | 
+   | `MTB_ML_PROFILE_DISABLE` | Disable profiling | IFX, TFLM |
+   | `MTB_ML_PROFILE_ENABLE_MODEL` (default) | Enables model profiling | IFX, TFLM | 
+   | `MTB_ML_PROFILE_ENABLE_LAYER` | Enables per-layer profiling | IFX |
+   | `MTB_ML_PROFILE_ENABLE_MODEL_PER_FRAME` | Enables per-frame model profiling | IFX |
+   | `MTB_ML_PROFILE_ENABLE_LAYER_PER_FRAME` | Enables per-frame layer profiling | IFX |
+   | `MTB_ML_LOG_ENABLE_MODEL_LOG` | Enables model output | IFX, TFLM
 
 If using the local regression data, the application automatically loads the regression data generated by the ML configurator tool. The regression data consists of a collection of inputs (X) and a collection of outputs (Y). Once the inference engine processes X, it outputs the result. Then, the firmware compares the result with the desired value, Y. If these match, the firmware contributes to the accuracy calculation.
 
@@ -298,7 +306,7 @@ If using the ModusToolbox&trade;-ML configurator tool, the same regression data 
 
 ### Resources and settings
 
-**Table 1. Application resources**
+**Table 4. Application resources**
 
 | Resource  |  Alias/object     |    Purpose     |
 | :------- | :------------    | :------------ |
@@ -335,7 +343,8 @@ Document title: *CE232551* - *Machine learning: Neural network profiler*
 | 1.0.0   | New code example      |
 | 1.1.0   | Added *test_data.csv* file for regression |
 | 2.0.0   | Updated code to use ml-middleware library <br> Added regression data streaming capability |
-| 3.0.0   | Updated to support TFLM |
+| 3.0.0   | Major update to support ModusToolbox&trade; v3.0. This version is not backward compatible with previous versions of ModusToolbox&trade;. <br> Updated to support TFLM |
+| 3.1.0   | Added more information about profile configuration <br> Added IAR compiler limitation note <br> Added memory limitation note for some devices |
 
 
 <br />
