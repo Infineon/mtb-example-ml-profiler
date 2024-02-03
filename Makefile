@@ -180,6 +180,7 @@ endif
 
 # Check if IAR is used with TFLM. If yes, trigger an error
 ifeq ($(NN_INFERENCE_ENGINE), $(filter $(NN_INFERENCE_ENGINE),tflm tflm_less))
+   CY_TOOLCHAIN_IAR_NOT_SUPPORTED = true
    ifeq ($(TOOLCHAIN), IAR)
       $(error Only GCC_ARM and ARM toolchains are supported for TFLM inference engine)
    endif
