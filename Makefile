@@ -7,7 +7,7 @@
 #
 ################################################################################
 # \copyright
-# Copyright 2018-2022, Cypress Semiconductor Corporation (an Infineon company)
+# Copyright 2018-2024, Cypress Semiconductor Corporation (an Infineon company)
 # SPDX-License-Identifier: Apache-2.0
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -90,6 +90,8 @@ NN_MODEL_FOLDER=mtb_ml_gen
 # ifx       -- Infineon ModusToolbox ML inference engine
 NN_INFERENCE_ENGINE=tflm
 
+# Only GCC_ARM and ARM toolchains are supported in this version of the code example
+MTB_SUPPORTED_TOOLCHAINS?=GCC_ARM ARM
 ################################################################################
 # Advanced Configuration
 ################################################################################
@@ -178,13 +180,7 @@ ifeq (int8x8, $(NN_TYPE))
 COMPONENTS+=ML_INT8x8
 endif
 
-# Check if IAR is used with TFLM. If yes, trigger an error
-ifeq ($(NN_INFERENCE_ENGINE), $(filter $(NN_INFERENCE_ENGINE),tflm tflm_less))
-   CY_TOOLCHAIN_IAR_NOT_SUPPORTED = true
-   ifeq ($(TOOLCHAIN), IAR)
-      $(error Only GCC_ARM and ARM toolchains are supported for TFLM inference engine)
-   endif
-endif
+
 
 # Select softfp or hardfp floating point. Default is softfp.
 VFP_SELECT=hardfp
