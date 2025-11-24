@@ -11,9 +11,9 @@
 extern "C" {
 #endif  // __cplusplus
 
-#define TEST_MODEL_MODEL_CONST_DATA_SIZE 52597
-#define TEST_MODEL_MODEL_INIT_DATA_SIZE 500
-#define TEST_MODEL_MODEL_UNINIT_DATA_SIZE 3684
+#define TEST_MODEL_MODEL_CONST_DATA_SIZE 14270
+#define TEST_MODEL_MODEL_INIT_DATA_SIZE 2552
+#define TEST_MODEL_MODEL_UNINIT_DATA_SIZE 4150
 
 
 // Sets up the model with init and prepare steps.

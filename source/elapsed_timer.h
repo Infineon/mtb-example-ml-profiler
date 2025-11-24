@@ -8,7 +8,7 @@
 *
 *
 *******************************************************************************
-* Copyright 2021-2024, Cypress Semiconductor Corporation (an Infineon company) or
+* Copyright 2021-2025, Cypress Semiconductor Corporation (an Infineon company) or
 * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
 *
 * This software, including source code, documentation and related
@@ -44,23 +44,18 @@
 
 #include "cy_result.h"
 
-/* Include the ML related items only if using ML inference middleware */
-#if defined(COMPONENT_ML_FLOAT32) || defined(COMPONENT_ML_INT16x16) || \
-    defined(COMPONENT_ML_INT16x8) || defined(COMPONENT_ML_INT8x8)
 
-    #define elapsed_timer_get_tick mtb_ml_model_profile_get_tsc
-    
-#endif
-
-#define elapsed_timer_resume Cy_SysTick_Enable
-#define elapsed_timer_pause  Cy_SysTick_Disable   
+/*******************************************************************************
+* Defines
+*******************************************************************************/
+#define elapsed_timer_get_tick mtb_ml_model_profile_get_tsc
 
 /*******************************************************************************
 * Functions
 *******************************************************************************/
 cy_rslt_t elapsed_timer_init(void);
-int elapsed_timer_get_tick(uint32_t *tick);
+int elapsed_timer_get_tick(uint64_t *tick);
 
-#endif /* NN_PROFILER_H */
+#endif /* ELAPSED_TIMER_H */
 
 /* [] END OF FILE */

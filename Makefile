@@ -7,7 +7,7 @@
 #
 ################################################################################
 # \copyright
-# Copyright 2018-2024, Cypress Semiconductor Corporation (an Infineon company)
+# Copyright 2018-2025, Cypress Semiconductor Corporation (an Infineon company)
 # SPDX-License-Identifier: Apache-2.0
 # 
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -75,7 +75,6 @@ VERBOSE=
 # float    -- floating point for the input data and weights
 # int8x8   -- 8-bit fixed-point for the input data and weights
 # int16x8  -- 16-bit fixed-point for the input data and 8-bit for weights
-# int16x16 -- 16-bit fixed-point for the input data and weights
 NN_TYPE=int8x8
 
 # Model Name to be loaded to the firmware
@@ -87,8 +86,15 @@ NN_MODEL_FOLDER=mtb_ml_gen
 # Choose the inference engine
 # tflm      -- TensorFlow Lite for Microcontrollers inference engine with interpreter
 # tflm_less -- TensorFlow Lite for Microcontrollers inference engine interpreter-less
-# ifx       -- Infineon ModusToolbox ML inference engine
 NN_INFERENCE_ENGINE=tflm
+
+# Is a RNN model? yes or no
+NN_RNN_MODEL=no
+
+# Choose the source of regression data for validation
+# stream - regression data is streamed from the ML configurator
+# local - regression data is stored locally in the project
+ML_VALIDATION_SOURCE=stream
 
 # Only GCC_ARM and ARM toolchains are supported in this version of the code example
 MTB_SUPPORTED_TOOLCHAINS?=GCC_ARM ARM
@@ -108,6 +114,11 @@ MTB_SUPPORTED_TOOLCHAINS?=GCC_ARM ARM
 #
 COMPONENTS=ML_MW_STREAM
 
+# Add where to source the regression data from
+ifeq (stream, $(ML_VALIDATION_SOURCE))
+	DEFINES+=USE_STREAM_DATA
+endif
+
 # Like COMPONENTS, but disable optional code that was enabled by default.
 DISABLE_COMPONENTS=
 
@@ -123,10 +134,8 @@ MODEL_PREFIX=$(subst $\",,$(NN_MODEL_NAME))
 CY_IGNORE+=$(NN_MODEL_FOLDER)
 # Add the model file based on the inference and data types
 SOURCES+=$(wildcard $(NN_MODEL_FOLDER)/mtb_ml_models/$(MODEL_PREFIX)_$(NN_INFERENCE_ENGINE)_model_$(NN_TYPE).c*)
+ifeq (local, $(ML_VALIDATION_SOURCE))
 # Add the regression files
-ifeq (ifx, $(NN_INFERENCE_ENGINE))
-SOURCES+=$(wildcard $(NN_MODEL_FOLDER)/mtb_ml_regression_data/$(MODEL_PREFIX)_$(NN_INFERENCE_ENGINE)_*_data_$(NN_TYPE).c)
-else
 SOURCES+=$(wildcard $(NN_MODEL_FOLDER)/mtb_ml_regression_data/$(MODEL_PREFIX)_tflm_*_data_$(NN_TYPE).c)
 endif
 
@@ -135,43 +144,22 @@ endif
 INCLUDES=$(NN_MODEL_FOLDER)/mtb_ml_regression_data $(NN_MODEL_FOLDER)/mtb_ml_models source
 
 # Add additional defines to the build process (without a leading -D).
-DEFINES=MODEL_NAME=$(NN_MODEL_NAME)
+DEFINES+=MODEL_NAME=$(NN_MODEL_NAME)
 
 # Add additional define to select the inference engine
 ifeq (tflm, $(NN_INFERENCE_ENGINE))
-COMPONENTS+=ML_TFLM_INTERPRETER IFX_CMSIS_NN
+COMPONENTS+=ML_TFLM IFX_CMSIS_NN
 DEFINES+=TF_LITE_STATIC_MEMORY
 endif
 
 ifeq (tflm_less, $(NN_INFERENCE_ENGINE))
-COMPONENTS+=ML_TFLM_INTERPRETER_LESS IFX_CMSIS_NN
+COMPONENTS+=ML_TFLM_LESS IFX_CMSIS_NN
 DEFINES+=TF_LITE_STATIC_MEMORY TF_LITE_MICRO_USE_OFFLINE_OP_USER_DATA
-endif
-
-ifeq (ifx, $(NN_INFERENCE_ENGINE))
-COMPONENTS+=ML_IFX IFX_CMSIS_NN
-endif
-
-# Determine build host OS so it can be printed
-ifeq ($(OS),Windows_NT)
-  DEFINES += BUILD_HOST=Windows 
-else
-  UNAME := $(shell uname -s)
-  ifeq ($(UNAME),Linux)
-    DEFINES += BUILD_HOST=Linux 
-  else ifeq ($(UNAME),Darwin)
-    DEFINES += BUILD_HOST=MacOS __APPLE__
-  else
-    DEFINES += BUILD_HOST=Unknown
-  endif
 endif
 
 # Depending which Neural Network Type, add a specific DEFINE and COMPONENT
 ifeq (float, $(NN_TYPE))
 COMPONENTS+=ML_FLOAT32
-endif
-ifeq (int16x16, $(NN_TYPE))
-COMPONENTS+=ML_INT16x16
 endif
 ifeq (int16x8, $(NN_TYPE))
 COMPONENTS+=ML_INT16x8
@@ -179,7 +167,6 @@ endif
 ifeq (int8x8, $(NN_TYPE))
 COMPONENTS+=ML_INT8x8
 endif
-
 
 
 # Select softfp or hardfp floating point. Default is softfp.

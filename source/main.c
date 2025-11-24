@@ -8,7 +8,7 @@
 *
 *
 *******************************************************************************
-* Copyright 2021-2024, Cypress Semiconductor Corporation (an Infineon company) or
+* Copyright 2021-2025, Cypress Semiconductor Corporation (an Infineon company) or
 * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
 *
 * This software, including source code, documentation and related
@@ -40,55 +40,153 @@
 * so agrees to indemnify Cypress against all liability.
 *******************************************************************************/
 
-#include "cy_pdl.h"
-#include "cyhal.h"
 #include "cybsp.h"
 #include "cy_retarget_io.h"
+#include "ml_validation.h"
 
 #include "elapsed_timer.h"
-#include "mtb_ml_stream.h"
-#include "ml_local_regression.h"
 
 #include MTB_ML_INCLUDE_MODEL_FILE(MODEL_NAME)
 
 /*******************************************************************************
 * Macros
 ********************************************************************************/
-#define USE_STREAM_DATA             0u
-#define USE_LOCAL_DATA              1u
 
-/* Choose the source of regression data. Options:
- * - USE_STREAM_DATA
- * - USE_LOCAL_DATA */ 
-#define REGRESSION_DATA_SOURCE      USE_STREAM_DATA
+#ifdef USE_STREAM_DATA
+    #define UART_DEFAULT_STREAM_BAUD_RATE   (1000000u)
+#else
+    #define UART_DEFAULT_STREAM_BAUD_RATE   (115200u)
+#endif /* USE_STREAM_DATA */
 
 /* Choose which profiling to enable. Options: 
  *  MTB_ML_PROFILE_DISABLE
  *  MTB_ML_PROFILE_ENABLE_MODEL
- *  MTB_ML_PROFILE_ENABLE_LAYER
- *  MTB_ML_PROFILE_ENABLE_MODEL_PER_FRAME
- *  MTB_ML_PROFILE_ENABLE_LAYER_PER_FRAME
- *  MTB_ML_LOG_ENABLE_MODEL_LOG */
+ *  MTB_ML_LOG_ENABLE_MODEL_LOG 
+ */
 #define PROFILE_CONFIGURATION       MTB_ML_PROFILE_ENABLE_MODEL
+
+/* The delay time in milliseconds used to wait for device to print UART messages */
+#define DELAY_TIME_MS                 (50u)
+
+/* MTB ML Block priority if using NPU */
+#define MTB_ML_PRIORITY               (3)
 
 /*******************************************************************************
 * Function Prototypes
 ********************************************************************************/
+static inline void handle_error(void)
+{
+    /* Disable all interrupts. */
+    __disable_irq();
 
+    CY_ASSERT(0);
+}
 /*******************************************************************************
-* Global Variables
-********************************************************************************/
+ * Function Name: cm55_ml_profiler_task
+ ********************************************************************************
+ * Summary:
+ * This is the ML task for CM55. It does...
+ *    1. Print welcome message
+ *    2. Initialize a timer for cycle counting
+ *    3. Initialize the a local or stream regression task
+ *    4. Execute the inference engine
+ *
+ * Parameters:
+ *  void * context passed from main function
+ *
+ * Return:
+ *  void
+ *
+ *******************************************************************************/
+static void cm4_ml_profiler_task(void * arg)
+{
+    cy_rslt_t result;
+    CY_UNUSED_PARAMETER(arg);
+
+    mtb_ml_model_bin_t model_bin = {MTB_ML_MODEL_BIN_DATA(MODEL_NAME)};
+
+    /* Initialize retarget-io to use the debug UART port */
+    cy_retarget_io_init(CYBSP_DEBUG_UART_TX, CYBSP_DEBUG_UART_RX, UART_DEFAULT_STREAM_BAUD_RATE);
+
+#ifdef USE_STREAM_DATA
+    /* Data streaming object */
+    mtb_data_streaming_interface_t data_stream_obj;
+    /* ML stream objects */
+    mtb_ml_stream_tag_t stream_tag;
+    mtb_ml_stream_interface_t stream_interface = {
+        .interface_obj = &data_stream_obj,
+        .stream_tag = &stream_tag,
+    };
+#endif /* USE_STREAM_DATA */
+
+    /* \x1b[2J\x1b[;H - ANSI ESC sequence for clear screen */
+    printf("\x1b[2J\x1b[;H");
+
+    printf("****************** "
+           "PSOC 6 MCU: Machine Learning Profiler on CM4 "
+           "****************** \r\n\n");
+
+    /* Initialize the ModusToolbox ML middleware */
+    mtb_ml_init(MTB_ML_PRIORITY);
+
+    result = ml_validation_init(PROFILE_CONFIGURATION, &model_bin);
+
+    if(CY_RSLT_SUCCESS != result)
+    {
+        printf("ERROR: initialization of the ML validation failed!\r\n");
+        handle_error();
+    }
+
+    /* Initialize the elapsed timer */
+    result = elapsed_timer_init();
+
+    if(CY_RSLT_SUCCESS != result)
+    {
+        printf("ERROR: initialization of elapsed timer failed!\r\n");
+        handle_error();
+    }
+
+    for (;;)
+    {
+#ifdef USE_STREAM_DATA
+        result = ml_validation_stream_task(&stream_interface);
+#else
+        result = ml_validation_local_task();
+#endif /* USE_STREAM_DATA */
+
+        if (CY_RSLT_SUCCESS == result)
+        {
+            printf("\n\rProfiling completed!\n\r");
+        }
+        else
+        {
+            printf("\n\rProfiling task failed!\n\r");
+        }
+
+    #ifndef USE_STREAM_DATA
+        /* Wait for the device to print out the results */
+        Cy_SysLib_Delay(DELAY_TIME_MS);
+
+        /* Only run the local regression once */
+        while (1)
+        {
+            Cy_SysPm_CpuEnterDeepSleep(CY_SYSPM_WAIT_FOR_INTERRUPT);
+        }
+    #endif /* USE_STREAM_DATA */
+
+        printf("Restarting...\r\n");
+    }
+}
 
 /*******************************************************************************
 * Function Name: main
 ********************************************************************************
 * Summary:
-* This is the main function for CM4 CPU. It does...
-*    1. Initializes the BSP.
-*    2. Prints welcome message
-*    3. Initialize the regression unit - stream or local
-*    4. Run the regression
-*
+* This is the main function for CM4 application. 
+* 
+* It sets up a machine learning model to be profiled. It can use local 
+* regression data or stream data.
+* 
 * Parameters:
 *  void
 *
@@ -110,65 +208,8 @@ int main(void)
     /* Enable global interrupts */
     __enable_irq();
 
-    /* Initialize retarget-io to use the debug UART port */
-#if REGRESSION_DATA_SOURCE == USE_LOCAL_DATA
-    cy_retarget_io_init(CYBSP_DEBUG_UART_TX, CYBSP_DEBUG_UART_RX, CY_RETARGET_IO_BAUDRATE);
-#else
-    /* Set the baudrate provided by the ML-Middleware (based on host OS) */
-    cy_retarget_io_init(CYBSP_DEBUG_UART_TX, CYBSP_DEBUG_UART_RX, UART_DEFAULT_STREAM_BAUD_RATE);
-#endif
-
-    /* Initialize the elapsed timer */
-    elapsed_timer_init();
-
-    /* \x1b[2J\x1b[;H - ANSI ESC sequence for clear screen */
-    printf("\x1b[2J\x1b[;H");
-
-    printf("****************** "
-           "Neural Network Profiler "
-           "****************** \r\n\n");
-
-    mtb_ml_model_bin_t model_bin = {MTB_ML_MODEL_BIN_DATA(MODEL_NAME)};
-
-#if REGRESSION_DATA_SOURCE == USE_STREAM_DATA
-    mtb_ml_stream_interface_t interface = {CY_ML_INTERFACE_UART, &cy_retarget_io_uart_obj};
-
-    result = mtb_ml_stream_init(&interface, PROFILE_CONFIGURATION, &model_bin);
-#else
-    result = ml_local_regression_init(PROFILE_CONFIGURATION, &model_bin);
-#endif    
-
-    if(result != CY_RSLT_SUCCESS)
-    {
-        printf("ERROR: initialization of the ML profiler failed!\r\n");
-        CY_HALT();
-    }
-
-    for (;;)
-    {
-#if REGRESSION_DATA_SOURCE == USE_STREAM_DATA
-        result = mtb_ml_stream_task();
-#else
-        result = ml_local_regression_task();
-#endif
-
-        if (result == CY_RSLT_SUCCESS)
-        {
-            printf("\n\rProfiling completed!\n\r");
-        }
-        else
-        {
-            printf("\n\rProfiling task failed!\n\r");
-        }
-
-#if REGRESSION_DATA_SOURCE == USE_LOCAL_DATA
-        /* Only run the local regression once */
-        elapsed_timer_pause();
-        cyhal_syspm_sleep();
-#endif
-
-        printf("Restarting...\r\n");
-    }
+    cm4_ml_profiler_task(NULL);
+    return 0;
 }
 
 /* [] END OF FILE */

@@ -1,5 +1,6 @@
 // This file is generated. Do not edit.
-// Generated on: 08.09.2022 02:33:42
+// Generated on: 26.08.2025 00:54:08
+// Build version: 3.1.0.15478
 
 #ifndef TEST_MODEL_GEN_H
 #define TEST_MODEL_GEN_H
@@ -10,9 +11,9 @@
 extern "C" {
 #endif  // __cplusplus
 
-#define TEST_MODEL_MODEL_CONST_DATA_SIZE 14094
-#define TEST_MODEL_MODEL_INIT_DATA_SIZE 372
-#define TEST_MODEL_MODEL_UNINIT_DATA_SIZE 1608
+#define TEST_MODEL_MODEL_CONST_DATA_SIZE 14102
+#define TEST_MODEL_MODEL_INIT_DATA_SIZE 500
+#define TEST_MODEL_MODEL_UNINIT_DATA_SIZE 1284
 
 
 // Sets up the model with init and prepare steps.
@@ -23,6 +24,8 @@ TfLiteTensor *TEST_MODEL_input(int index);
 TfLiteTensor *TEST_MODEL_output(int index);
 // Runs inference for the model.
 TfLiteStatus TEST_MODEL_invoke();
+// Resets all variable tensors
+TfLiteStatus TEST_MODEL_reset();
 
 // Returns the number of input tensors.
 size_t TEST_MODEL_inputs();

@@ -1,17 +1,24 @@
 // This file is generated. Do not edit.
-// Generated on: 08.09.2022 02:33:42
+// Generated on: 26.08.2025 00:54:06
+// Build version: 3.1.0.15478
 
 #include "tensorflow/lite/c/builtin_op_data.h"
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/micro/kernels/micro_ops.h"
 #include "tensorflow/lite/micro/compatibility.h"
 #include "tensorflow/lite/micro/micro_context.h"
+#include "tensorflow/lite/micro/micro_log.h"
 #if LOG_OP_INPUTS
 #include "tensorflow/lite/micro/micro_invoke_log.h"
 #endif
 
+namespace tflite {
+  class MicroGraph;
+}
+
+
 #if TF_LITE_MICRO_USE_OFFLINE_OP_USER_DATA
-#include "tensorflow/lite/micro/kernels/ifx_common/offline_prepare_utils.h" 
+#include "ifx_common/offline_prepare_utils.h" 
 #endif  // TF_LITE_MICRO_USE_OFFLINE_OP_USER_DATA
 
 
@@ -24,19 +31,25 @@
 #endif
 
 #if TF_LITE_MICRO_USE_OFFLINE_OP_USER_DATA
-#include "tensorflow/lite/micro/kernels/ifx_cmsis_nn/add_op_data.h"
-#include "tensorflow/lite/micro/kernels/ifx_cmsis_nn/conv_op_data.h"
-#include "tensorflow/lite/micro/kernels/ifx_cmsis_nn/depthwise_conv_op_data.h"
-#include "tensorflow/lite/micro/kernels/ifx_cmsis_nn/fully_connected_op_data.h"
-#include "tensorflow/lite/micro/kernels/ifx_cmsis_nn/mul_op_data.h"
-#include "tensorflow/lite/micro/kernels/ifx_cmsis_nn/pooling_op_data.h"
-#include "tensorflow/lite/micro/kernels/ifx_cmsis_nn/softmax_op_data.h"
-#include "tensorflow/lite/micro/kernels/ifx_cmsis_nn/svdf_op_data.h"
+#include "ifx_cmsis_nn/addsub_op_data.h"
+#include "ifx_cmsis_nn/conv_op_data.h"
+#include "ifx_cmsis_nn/depthwise_conv_op_data.h"
+#include "ifx_cmsis_nn/fully_connected_op_data.h"
+#include "ifx_cmsis_nn/unidirectional_sequence_lstm_op_data.h"
+#include "ifx_cmsis_nn/mul_op_data.h"
+#include "ifx_cmsis_nn/pooling_op_data.h"
+#include "ifx_cmsis_nn/softmax_op_data.h"
+#include "ifx_cmsis_nn/addsub_op_data.h"
+#include "ifx_cmsis_nn/svdf_op_data.h"
 #endif  // TF_LITE_MICRO_USE_OFFLINE_OP_USER_DATA
 namespace {
 
 
-constexpr int kTensorArenaSize = 3508;
+    
+const uintptr_t kTensorAlignment = 16;
+const uintptr_t kTensorAlignMask = ~(kTensorAlignment-1u);
+
+constexpr int kTensorArenaSize = 3200;
 uint8_t tensor_arena[kTensorArenaSize] ALIGN(16);
 
 
@@ -52,16 +65,17 @@ enum used_operators_e {
 
 struct TensorInfo_t { // subset of TfLiteTensor used for initialization from constant memory
   void* data;
-  TfLiteIntArray* dims;
-  size_t bytes;
+TfLiteIntArray* dims;
+size_t bytes;
 };
 
 struct NodeInfo_t { // subset of TfLiteNode used for initialization from constant memory
-  struct TfLiteIntArray* inputs;
-  struct TfLiteIntArray* outputs;
-  void* builtin_data;
-  used_operators_e used_op_index;
-  };
+const struct TfLiteIntArray* inputs;
+const struct TfLiteIntArray* outputs;
+const struct TfLiteIntArray* intermediates;
+void* builtin_data;
+used_operators_e used_op_index;
+};
 
 
 TfLiteContext ctx{};
@@ -74,22 +88,22 @@ TfLiteEvalTensor evalTensors[11];
 
 TfLiteTensor * const tflTensors = tflTensorsWithMinus1+1;
 
-TfLiteRegistration registrations[OP_LAST];
+TFLMRegistration registrations[OP_LAST];
 constexpr size_t kOpNodesCount = 4;
 
 
 TfLiteNode tflNodes[kOpNodesCount];
 
 const TfArray<2, int> tensor_dimension0 = { 2, { 1, 784, } };
-const ALIGN(8) float tensor_data1[10] = { 
-    -0.50495588779449463, -0.69695049524307251, -0.17364080250263214, 0.27870252728462219, -0.33242303133010864, 0.42235437035560608, -0.20162840187549591, -0.54028677940368652, 0.84096723794937134, -0.23537254333496094, 
-};
-const TfArray<1, int> tensor_dimension1 = { 1, { 10, } };
-const ALIGN(8) float tensor_data2[16] = { 
+const ALIGN(8) float tensor_data1[16] = { 
     -0.17366835474967957, 0.63102006912231445, 0.38067629933357239, -0.027905687689781189, -0.0037541463971138, -0.15471433103084564, -0.054752446711063385, 0.010468685068190098, -0.035137619823217392, 0.6707034707069397, 
     -0.14857092499732971, -0.0010739974677562714, -0.039504610002040863, -0.00088284298544749618, -0.2140079140663147, -0.11627337336540222, 
 };
-const TfArray<1, int> tensor_dimension2 = { 1, { 16, } };
+const TfArray<1, int> tensor_dimension1 = { 1, { 16, } };
+const ALIGN(8) float tensor_data2[10] = { 
+    -0.50495588779449463, -0.69695049524307251, -0.17364080250263214, 0.27870252728462219, -0.33242303133010864, 0.42235437035560608, -0.20162840187549591, -0.54028677940368652, 0.84096723794937134, -0.23537254333496094, 
+};
+const TfArray<1, int> tensor_dimension2 = { 1, { 10, } };
 const ALIGN(8) float tensor_data3[16] = { 
     -0.029068082571029663, -0.025355888530611992, -0.025719162076711655, -0.033407494425773621, -0.014586720615625381, -0.037781421095132828, -0.01864190399646759, -0.02177993580698967, -0.033817607909440994, -0.0031454688869416714, 
     -0.034708376973867416, -0.014317601919174194, -0.016212532296776772, -0.022159004583954811, -0.0084481295198202133, -0.13234789669513702, 
@@ -150,22 +164,23 @@ const TfArray<2, int> tensor_dimension7 = { 2, { 1, 16, } };
 const TfArray<2, int> tensor_dimension8 = { 2, { 1, 16, } };
 const TfArray<2, int> tensor_dimension9 = { 2, { 1, 10, } };
 const TfArray<2, int> tensor_dimension10 = { 2, { 1, 10, } };
-const TfLiteFullyConnectedParams opdata0 = { kTfLiteActRelu, kTfLiteFullyConnectedWeightsFormatDefault, 0, 0 };
+const TfLiteFullyConnectedParams opdata0 = { kTfLiteActRelu, kTfLiteFullyConnectedWeightsFormatDefault, 0, 0, (TfLiteType)1 };
 const TfArray<3, int> inputs0 = { 3, { 0, 4, 3, } };
 const TfArray<1, int> outputs0 = { 1, { 7, } };
-const TfLiteFullyConnectedParams opdata1 = { kTfLiteActRelu, kTfLiteFullyConnectedWeightsFormatDefault, 0, 0 };
-const TfArray<3, int> inputs1 = { 3, { 7, 5, 2, } };
+const TfLiteFullyConnectedParams opdata1 = { kTfLiteActRelu, kTfLiteFullyConnectedWeightsFormatDefault, 0, 0, (TfLiteType)1 };
+const TfArray<3, int> inputs1 = { 3, { 7, 5, 1, } };
 const TfArray<1, int> outputs1 = { 1, { 8, } };
-const TfLiteFullyConnectedParams opdata2 = { kTfLiteActNone, kTfLiteFullyConnectedWeightsFormatDefault, 0, 0 };
-const TfArray<3, int> inputs2 = { 3, { 8, 6, 1, } };
+const TfLiteFullyConnectedParams opdata2 = { kTfLiteActNone, kTfLiteFullyConnectedWeightsFormatDefault, 0, 0, (TfLiteType)1 };
+const TfArray<3, int> inputs2 = { 3, { 8, 6, 2, } };
 const TfArray<1, int> outputs2 = { 1, { 9, } };
 const TfLiteSoftmaxParams opdata3 = { 1 };
 const TfArray<1, int> inputs3 = { 1, { 9, } };
 const TfArray<1, int> outputs3 = { 1, { 10, } };
+const TfLiteIntArray emptyIntArray = {0}; // Shared for all null an zero-size TfLiteIntArray values
 const TensorInfo_t tensorData[] = {
   { tensor_arena + 0, (TfLiteIntArray*)&tensor_dimension0, 3136, },
-  { (void*)tensor_data1, (TfLiteIntArray*)&tensor_dimension1, 40, },
-  { (void*)tensor_data2, (TfLiteIntArray*)&tensor_dimension2, 64, },
+  { (void*)tensor_data1, (TfLiteIntArray*)&tensor_dimension1, 64, },
+  { (void*)tensor_data2, (TfLiteIntArray*)&tensor_dimension2, 40, },
   { (void*)tensor_data3, (TfLiteIntArray*)&tensor_dimension3, 64, },
   { (void*)tensor_data4, (TfLiteIntArray*)&tensor_dimension4, 50176, },
   { (void*)tensor_data5, (TfLiteIntArray*)&tensor_dimension5, 1024, },
@@ -176,10 +191,10 @@ const TensorInfo_t tensorData[] = {
   { tensor_arena + 0, (TfLiteIntArray*)&tensor_dimension10, 40, },
 };
 const NodeInfo_t nodeData[kOpNodesCount] = {
-  { (TfLiteIntArray*)&inputs0, (TfLiteIntArray*)&outputs0, const_cast<void*>(static_cast<const void*>(&opdata0)), OP_FULLY_CONNECTED, },
-  { (TfLiteIntArray*)&inputs1, (TfLiteIntArray*)&outputs1, const_cast<void*>(static_cast<const void*>(&opdata1)), OP_FULLY_CONNECTED, },
-  { (TfLiteIntArray*)&inputs2, (TfLiteIntArray*)&outputs2, const_cast<void*>(static_cast<const void*>(&opdata2)), OP_FULLY_CONNECTED, },
-  { (TfLiteIntArray*)&inputs3, (TfLiteIntArray*)&outputs3, const_cast<void*>(static_cast<const void*>(&opdata3)), OP_SOFTMAX, },
+  { (const TfLiteIntArray *)&inputs0, (const TfLiteIntArray *)&outputs0, (TfLiteIntArray *)&emptyIntArray, const_cast<void*>(static_cast<const void*>(&opdata0)), OP_FULLY_CONNECTED, },
+  { (const TfLiteIntArray *)&inputs1, (const TfLiteIntArray *)&outputs1, (TfLiteIntArray *)&emptyIntArray, const_cast<void*>(static_cast<const void*>(&opdata1)), OP_FULLY_CONNECTED, },
+  { (const TfLiteIntArray *)&inputs2, (const TfLiteIntArray *)&outputs2, (TfLiteIntArray *)&emptyIntArray, const_cast<void*>(static_cast<const void*>(&opdata2)), OP_FULLY_CONNECTED, },
+  { (const TfLiteIntArray *)&inputs3, (const TfLiteIntArray *)&outputs3, (TfLiteIntArray *)&emptyIntArray, const_cast<void*>(static_cast<const void*>(&opdata3)), OP_SOFTMAX, },
 };
 
 
@@ -195,12 +210,37 @@ const size_t scratchbuf_offsets[] = {
 0 // dummy to avoid empty vector
 };  
 
+
+// Memory allocation pointers.  Initialized to start and end of area in init phase...
+uint8_t *head_ptr;
+uint8_t *tail_ptr;
+
 void *AllocatePersistentBuffer(struct TfLiteContext* ignore,
                                                  size_t bytes) {
-  static uint8_t *AllocPtr = tensor_arena + sizeof(tensor_arena);
 
-  AllocPtr -= bytes;
-  return AllocPtr;
+  auto required_start = reinterpret_cast<uint8_t *>(reinterpret_cast<uintptr_t>(tail_ptr - bytes) & kTensorAlignMask);
+  if (required_start < head_ptr) {
+        MicroPrintf(
+          "AllocatePersistentBuffer: failed after alignment: %u align %u , available %u",
+          bytes, kTensorAlignment, static_cast<uintptr_t>(tail_ptr-head_ptr));
+        return nullptr;
+  }
+  tail_ptr = required_start;
+  return tail_ptr;
+}
+
+uint8_t* AllocateTempBuffer(size_t size, size_t alignment) {
+  uint8_t* const aligned_start = 
+    reinterpret_cast<uint8_t *>(reinterpret_cast<uintptr_t>(head_ptr + alignment-1)/alignment*alignment);
+  uint8_t* const aligned_end = aligned_start + size;
+  if (aligned_end > tail_ptr) {
+    MicroPrintf(
+        "AllocateTempBuffer: failed: %u, align %u available %u",
+        size, alignment, static_cast<uintptr_t>(tail_ptr-head_ptr));
+    return nullptr;
+  }
+  head_ptr = aligned_end;
+  return aligned_start;
 }
 
 TfLiteEvalTensor *GetEvalTensor(const struct TfLiteContext *ignore,
@@ -228,7 +268,7 @@ namespace micro {
 
 namespace add {
 
-OpData TEST_MODEL_op_user_data[] = {
+::tflite::ops::micro::addsub::OpData TEST_MODEL_op_user_data[] = {
 };
 } // namespace add
 
@@ -246,12 +286,27 @@ OpData TEST_MODEL_op_user_data[] = {
 
 namespace fully_connected {
 
+constexpr int32_t *TEST_MODEL_op_user_data0_per_channel_output_multiplier = nullptr;
+constexpr int32_t *TEST_MODEL_op_user_data0_per_channel_output_shift = nullptr;
+constexpr int32_t *TEST_MODEL_op_user_data0_kernel_sums = nullptr;
+constexpr int32_t *TEST_MODEL_op_user_data1_per_channel_output_multiplier = nullptr;
+constexpr int32_t *TEST_MODEL_op_user_data1_per_channel_output_shift = nullptr;
+constexpr int32_t *TEST_MODEL_op_user_data1_kernel_sums = nullptr;
+constexpr int32_t *TEST_MODEL_op_user_data2_per_channel_output_multiplier = nullptr;
+constexpr int32_t *TEST_MODEL_op_user_data2_per_channel_output_shift = nullptr;
+constexpr int32_t *TEST_MODEL_op_user_data2_kernel_sums = nullptr;
 OpData TEST_MODEL_op_user_data[] = {
-  {{0, 0, 0, 0, 0, 0, 0, 0}, -1, nullptr, -1, 0, EvalFloat}, 
-  {{0, 0, 0, 0, 0, 0, 0, 0}, -1, nullptr, -1, 0, EvalFloat}, 
-  {{0, 0, 0, 0, 0, 0, 0, 0}, -1, nullptr, -1, 0, EvalFloat}
+  {{0, 0, 0, 0, -1, 0, 0, 0, 0, nullptr, nullptr, false}, TEST_MODEL_op_user_data0_per_channel_output_multiplier, TEST_MODEL_op_user_data0_per_channel_output_shift, -1, TEST_MODEL_op_user_data0_kernel_sums, 1, 784, 16, nullptr, -1, -1, EvalFloat}, 
+  {{0, 0, 0, 0, -1, 0, 0, 0, 0, nullptr, nullptr, false}, TEST_MODEL_op_user_data1_per_channel_output_multiplier, TEST_MODEL_op_user_data1_per_channel_output_shift, -1, TEST_MODEL_op_user_data1_kernel_sums, 1, 16, 16, nullptr, -1, -1, EvalFloat}, 
+  {{0, 0, 0, 0, -1, 0, 0, 0, 0, nullptr, nullptr, false}, TEST_MODEL_op_user_data2_per_channel_output_multiplier, TEST_MODEL_op_user_data2_per_channel_output_shift, -1, TEST_MODEL_op_user_data2_kernel_sums, 1, 16, 10, nullptr, -1, -1, EvalFloat}
 };
 } // namespace fully_connected
+
+namespace lstm {
+
+OpData TEST_MODEL_op_user_data[] = {
+};
+} // namespace lstm
 
 namespace mul {
 
@@ -268,13 +323,19 @@ OpData TEST_MODEL_op_user_data[] = {
 namespace softmax {
 
 OpData TEST_MODEL_op_user_data[] = {
-  {{1.000000, 0, 0, 0, 0, 0, 0, 0.000000, nullptr, nullptr, nullptr, nullptr, nullptr}, SoftmaxFloat}
+  {{1.000000000000e+00, 0, 0, 0, 0, 0, 0, 0.000000000000e+00, nullptr, nullptr, nullptr, nullptr, nullptr}, 1, 10, SoftmaxFloat}
 };
 } // namespace softmax
 
+namespace sub {
+
+::tflite::ops::micro::addsub::OpData TEST_MODEL_op_user_data[] = {
+};
+} // namespace sub
+
 namespace svdf {
 
-OpData TEST_MODEL_op_user_data[] = {
+IfxCmsisNnOpDataSvdf TEST_MODEL_op_user_data[] = {
 };
 } // namespace svdf
 
@@ -298,7 +359,7 @@ void *precomputed_op_user_data[] = {
 class TEST_MODEL_PreinterpretedMicroContext : public tflite::MicroContext {
  public:
    TEST_MODEL_PreinterpretedMicroContext() : 
-    tflite::MicroContext(nullptr, nullptr, nullptr) {}
+    tflite::MicroContext() {}
 
   // Allocate persistent buffer which has the same life time as the interpreter.
   // Returns nullptr on failure.
@@ -309,6 +370,7 @@ class TEST_MODEL_PreinterpretedMicroContext : public tflite::MicroContext {
     return ::AllocatePersistentBuffer(nullptr, bytes);
   }
 
+  
   // Request a scratch buffer in the arena through static memory planning.
   // This method is only available in Prepare stage and the buffer is allocated
   // by the interpreter between Prepare and Eval stage. In Eval stage,
@@ -319,6 +381,8 @@ class TEST_MODEL_PreinterpretedMicroContext : public tflite::MicroContext {
     return ::RequestScratchBufferInArena(nullptr, bytes, buffer_idx);
   }
 
+
+
   // Get the scratch buffer pointer.
   // This method is only available in Eval stage.
   // Virtual so that it can be faked for kernel tests.
@@ -326,35 +390,34 @@ class TEST_MODEL_PreinterpretedMicroContext : public tflite::MicroContext {
     return ::GetScratchBuffer(nullptr, buffer_idx);
   }
 
+
   // Returns a temporary TfLiteTensor struct for a given index.
   // Virtual so that it can be faked for kernel tests.
   virtual TfLiteTensor* AllocateTempTfLiteTensor(int tensor_idx) {
     return tensor_idx >= 0 ? &tflTensors[tensor_idx] : nullptr;
   }
 
-  // Returns a temporary TfLiteTensor struct for the specified input tensor of a
-  // given mode. This is the recommended API over the deprecated
-  // GetInput/GetInputSafe to get a temp input tensor. The returned tensor shall
-  // be freed via calling DeallocateTempTfLiteTensor.
-  virtual TfLiteTensor* AllocateTempInputTensor(const TfLiteNode* node,
-                                                int index) {
-    return AllocateTempTfLiteTensor(node->inputs->data[index]);
-  }
-
-  // Returns a temporary TfLiteTensor struct for the specified output tensor of
-  // a given mode. This is the recommended API over the deprecated
-  // GetOutput/GetOutputSafe to get a temp output tensor. The returned tensor
-  // shall be freed via calling DeallocateTempTfLiteTensor.
-  virtual TfLiteTensor* AllocateTempOutputTensor(const TfLiteNode* node,
-                                                 int index) {
-    return AllocateTempTfLiteTensor(node->outputs->data[index]);
-  }
 
   // Deallocates a temp TfLiteTensor.
   // Virtual so that it can be faked for kernel tests.
   virtual void DeallocateTempTfLiteTensor(TfLiteTensor* tensor) {
     // No-op
   }
+
+  
+  // Returns a pointer to a temporary buffer (from the arena).
+  // This API is only valid from the kernel's Prepare function and
+  // the buffer's lifetime is also that of the Prepare function.
+  virtual uint8_t* AllocateTempBuffer(size_t size, size_t alignment) {
+    return ::AllocateTempBuffer(size, alignment);
+  }
+
+  // Signals that the temporary buffer is no longer needed
+  // No-op... memory is re-used anyhow...
+  virtual void DeallocateTempBuffer(uint8_t* buffer) {}
+
+
+
 
   // Returns a TfLiteEvalTensor struct for a given index.
   // Virtual so that it can be faked for kernel tests.
@@ -366,16 +429,24 @@ class TEST_MODEL_PreinterpretedMicroContext : public tflite::MicroContext {
   // Does not take ownership of the pointer and the pointer must refer to valid
   // an object that outlive this class instance.
   // This can only be called once to set one external context.
-  TfLiteStatus set_external_context(void* external_context_payload);
+  virtual TfLiteStatus set_external_context(void* external_context_payload) {
+    return kTfLiteError;
+  }
 
-  void* external_context() { return external_context_payload_; }
+ virtual void* external_context() { return nullptr; }
+
+  virtual tflite::MicroGraph& graph() { 
+    static tflite::MicroGraph *dummy_micro_graph = nullptr;
+    return *dummy_micro_graph;
+  }
 protected:
-  void* external_context_payload_ = nullptr;
 
   TF_LITE_REMOVE_VIRTUAL_DELETE
 };
 
 extern "C" TfLiteStatus TEST_MODEL_init() {
+  head_ptr = tensor_arena ;
+  tail_ptr = tensor_arena + sizeof(tensor_arena);
   ctx.AllocatePersistentBuffer = &AllocatePersistentBuffer;
   ctx.RequestScratchBufferInArena = &RequestScratchBufferInArena;
   ctx.GetScratchBuffer = &GetScratchBuffer;
@@ -409,8 +480,9 @@ extern "C" TfLiteStatus TEST_MODEL_init() {
 tflite::micro::resetOfflineOpUserData( tflite::micro::TEST_MODEL_model::precomputed_op_user_data);
 #endif  // TF_LITE_MICRO_USE_OFFLINE_OP_USER_DATA
   for(size_t i = 0; i < kOpNodesCount; ++i) {
-    tflNodes[i].inputs = nodeData[i].inputs;
-    tflNodes[i].outputs = nodeData[i].outputs;
+    tflNodes[i].inputs = (TfLiteIntArray*)nodeData[i].inputs;
+    tflNodes[i].outputs = (TfLiteIntArray*)nodeData[i].outputs;
+    tflNodes[i].intermediates = (TfLiteIntArray*)nodeData[i].intermediates;
     tflNodes[i].builtin_data = nodeData[i].builtin_data;
     tflNodes[i].custom_initial_data = nullptr;
     tflNodes[i].custom_initial_data_size = 0;
@@ -507,3 +579,8 @@ tflite::micro::resetOfflineOpUserData( tflite::micro::TEST_MODEL_model::precompu
   return kTfLiteOk;
 }
 
+
+extern "C" TfLiteStatus TEST_MODEL_reset() {
+
+  return kTfLiteOk;
+}

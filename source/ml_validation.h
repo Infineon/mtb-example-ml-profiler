@@ -1,14 +1,14 @@
 /******************************************************************************
-* File Name:   ml_local_regression.h
+* File Name:   ml_validation.h
 *
 * Description: This file contains the function prototypes and constants used
-*   in ml_local_regression.c.
+*   in ml_validation.c.
 *
 * Related Document: See README.md
 *
 *
 *******************************************************************************
-* Copyright 2021-2024, Cypress Semiconductor Corporation (an Infineon company) or
+* Copyright 2023-2025, Cypress Semiconductor Corporation (an Infineon company) or
 * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
 *
 * This software, including source code, documentation and related
@@ -39,18 +39,21 @@
 * of such system or application assumes all risk of such use and in doing
 * so agrees to indemnify Cypress against all liability.
 *******************************************************************************/
-#ifndef ML_LOCAL_REGRESSION_H
-#define ML_LOCAL_REGRESSION_H
+#ifndef ML_VALIDATION_H
+#define ML_VALIDATION_H
 
-#include "mtb_ml_model.h"
+#include "mtb_ml.h"
 
 /*******************************************************************************
 * Functions
 *******************************************************************************/
-cy_rslt_t ml_local_regression_init(mtb_ml_profile_config_t profile_cfg,
-                                   mtb_ml_model_bin_t *model_bin);
-cy_rslt_t ml_local_regression_task(void);
+cy_rslt_t ml_validation_init(mtb_ml_profile_config_t profile_cfg,
+                             mtb_ml_model_bin_t *model_bin);
+#ifndef USE_STREAM_DATA
+cy_rslt_t ml_validation_local_task(void);
+#endif
+cy_rslt_t ml_validation_stream_task(mtb_ml_stream_interface_t *iface);
 
-#endif /* CY_ML_LOCAL_H */
+#endif /* ML_VALIDATION_H */
 
 /* [] END OF FILE */

@@ -12,13 +12,13 @@ For details about the ModusToolbox&trade; machine learning solution, see this [l
 
 [View this README on GitHub.](https://github.com/Infineon/mtb-example-ml-profiler)
 
-[Provide feedback on this code example.](https://cypress.co1.qualtrics.com/jfe/form/SV_1NTns53sK2yiljn?Q_EED=eyJVbmlxdWUgRG9jIElkIjoiQ0UyMzI1NTEiLCJTcGVjIE51bWJlciI6IjAwMi0zMjU1MSIsIkRvYyBUaXRsZSI6Ik1hY2hpbmUgbGVhcm5pbmc6IE5ldXJhbCBuZXR3b3JrIHByb2ZpbGVyIiwicmlkIjoicmxvcyIsIkRvYyB2ZXJzaW9uIjoiMy4xLjIiLCJEb2MgTGFuZ3VhZ2UiOiJFbmdsaXNoIiwiRG9jIERpdmlzaW9uIjoiTUNEIiwiRG9jIEJVIjoiSUNXIiwiRG9jIEZhbWlseSI6IlBTT0MifQ==)
+[Provide feedback on this code example.](https://cypress.co1.qualtrics.com/jfe/form/SV_1NTns53sK2yiljn?Q_EED=eyJVbmlxdWUgRG9jIElkIjoiQ0UyMzI1NTEiLCJTcGVjIE51bWJlciI6IjAwMi0zMjU1MSIsIkRvYyBUaXRsZSI6Ik1hY2hpbmUgbGVhcm5pbmc6IE5ldXJhbCBuZXR3b3JrIHByb2ZpbGVyIiwicmlkIjoicmxvcyIsIkRvYyB2ZXJzaW9uIjoiMy4yLjAiLCJEb2MgTGFuZ3VhZ2UiOiJFbmdsaXNoIiwiRG9jIERpdmlzaW9uIjoiTUNEIiwiRG9jIEJVIjoiSUNXIiwiRG9jIEZhbWlseSI6IlBTT0MifQ==)
 
 
 ## Requirements
 
-- [ModusToolbox&trade; software](https://www.infineon.com/cms/en/design-support/tools/sdk/modustoolbox-software/) v3.0 or later (tested with v3.0)
-- [ModusToolbox&trade; Machine Learning Pack](https://softwaretools.infineon.com/tools/com.ifx.tb.tool.modustoolboxpackmachinelearning) v2.0 or later (tested with v2.0)
+- [ModusToolbox&trade; software](https://www.infineon.com/cms/en/design-support/tools/sdk/modustoolbox-software/) v3.5 or later (tested with v3.5)
+- [ModusToolbox&trade; Machine Learning Pack](https://softwaretools.infineon.com/tools/com.ifx.tb.tool.modustoolboxpackmachinelearning) v3.0 or later (tested with v3.0)
 - PSoC&trade; 6 Board support package (BSP) minimum required version: 4.0.0
 - Programming language: C and C++
 - Associated parts: All [PSoC&trade; 6 MCU](https://www.infineon.com/cms/en/product/microcontroller/32-bit-psoc-arm-cortex-microcontroller/psoc-6-32-bit-arm-cortex-m4-mcu/) parts
@@ -26,7 +26,7 @@ For details about the ModusToolbox&trade; machine learning solution, see this [l
 
 ## Supported toolchains (make variable 'TOOLCHAIN')
 
-- GNU Arm® embedded compiler v10.3.1 (`GCC_ARM`) - Default value of `TOOLCHAIN`
+- GNU Arm&reg; Embedded Compiler v11.3.1 (`GCC_ARM`) – Default value of `TOOLCHAIN`
 - Arm&reg; Compiler v6.16 (`ARM`)
 
 **Note:** TensorFlow Lite for Microcontrollers (TFLM) does not support IAR compiler.
@@ -39,7 +39,6 @@ For details about the ModusToolbox&trade; machine learning solution, see this [l
 - [PSoC&trade; 62S1 Wi-Fi Bluetooth&reg; pioneer kit](https://www.infineon.com/cms/en/product/evaluation-boards/cyw9p62s1-43438evb-01/) (`CYW9P62S1-43438EVB-01`)
 - [PSoC&trade; 62S1 Wi-Fi Bluetooth&reg; pioneer kit](https://www.infineon.com/cms/en/product/evaluation-boards/cyw9p62s1-43012evb-01/) (`CYW9P62S1-43012EVB-01`)
 - [PSoC&trade; 62S3 Wi-Fi Bluetooth&reg; prototyping kit](https://www.infineon.com/cms/en/product/evaluation-boards/cy8cproto-062s3-4343w/) (`CY8CPROTO-062S3-4343W`)
-- [PSoC&trade; 64 "Secure Boot" Wi-Fi Bluetooth&reg; pioneer kit](https://www.infineon.com/cms/en/product/evaluation-boards/cy8ckit-064b0s2-4343w/) (`CY8CKIT-064B0S2-4343W`)
 - [PSoC&trade; 62S2 evaluation kit](https://www.infineon.com/cms/en/product/evaluation-boards/cy8ceval-062s2/) (`CY8CEVAL-062S2`, `CY8CEVAL-062S2-LAI-4373M2`, `CY8CEVAL-062S2-MUR-43439M2`)
 
 
@@ -64,16 +63,15 @@ By default, the output files location is set to *mtb_ml_gen*. The project name i
 
 | Makefile parameter | Description |
 | :--------   | :-------- |
-| `NN_TYPE=`  | Defines the input data format and NN weights. It can be `float`, `int16x16`, `int16x8`, or `int8x8`. |
+| `NN_TYPE=`  | Defines the input data format and NN weights. It can be `float`, `int16x8`, or `int8x8`. |
 | `NN_MODEL_NAME=` | Defines the name of the model. The name comes from the *project name* defined in the ML configurator tool. No quotes are used when changing the name of the model. |
 | `NN_MODEL_FOLDER=` | Sets the name where the model files will be placed. The name comes from the *output file location* defined in the ModusToolbox&trade;-ML configurator tool. |
-| `NN_INFERENCE_ENGINE` | Defines the inference engine to run. It has three options: `tflm`, `tflm_less` and `ifx` |
+| `NN_INFERENCE_ENGINE` | Defines the inference engine to run. It has two options: `tflm` and `tflm_less` |
+| `NN_RRN_MODEL` | Defines if the profiled model is RNN type |
 
 <br>
 
-**Note**: The `tflm` and `tflm_less` inference engines only support `float` and `int8x8`.
-
-To validate the given model with the ModusToolbox&trade;-ML configurator tool, click the **Validate in Desktop** tab. By default, the project uses testing data stored in the file located at *test_data/test_data.csv*.
+To validate the given model with the ModusToolbox&trade;-ML configurator tool, click the **Validate in Desktop** tab. By default, the project uses testing data stored in the file located at *sample_data/test_data.csv*.
 
 Alternatively, you can use a random dataset structure to validate the model. You can click the **Validate** button to initiate the validation. Note that this will generate the regression data files, which can be stored in the internal memory of the target device. Because of that, limit the sample count to 100 in the ModusToolbox&trade;-ML configurator tool.
 
@@ -167,12 +165,9 @@ For a list of supported IDEs and more details, see the "Exporting to IDEs" secti
 
 ## Operation
 
-
-If using a PSoC&trade; 64 "Secure" MCU kit (like CY8CKIT-064B0S2-4343W), the PSoC&trade; 64 device must be provisioned with keys and policies before being programmed. Follow the instructions in the ["Secure Boot" SDK user guide](https://www.cypress.com/documentation/software-and-drivers/psoc-64-secure-mcu-secure-boot-sdk-user-guide) to provision the device. If the kit is already provisioned, copy-paste the keys and policy folder to the application folder.
-
 1. Connect the board to your PC using the provided USB cable through the KitProg3 USB connector.
 
-2. If using local regression data, in *main.c*, set the `REGRESSION_DATA_SOURCE` to `USE_LOCAL_DATA`. Then open a terminal program and select the KitProg3 COM port. Set the serial port parameters to 8N1 and 115200 baud.
+2. If using local regression data, in the *Makefile*, set the `ML_VALIDATION_SOURCE` to `local`. Then open a terminal program and select the KitProg3 COM port. Set the serial port parameters to 8N1 and 115200 baud.
 
 3. Program the board using one of the following:
 
@@ -196,18 +191,20 @@ If using a PSoC&trade; 64 "Secure" MCU kit (like CY8CKIT-064B0S2-4343W), the PSo
       ```
    </details>
 
-4. After programming, the application starts automatically. If using regression local data, confirm that "Neural Network Profiler", model information, profiling data and accuracy results are printed on the UART terminal.
+4. After programming, the application starts automatically. If using regression local data, confirm that "Machine Learning Profiler on CM4", model information, profiling data and accuracy results are printed on the UART terminal.
 
 5. If using streaming regression data (default option), open the ModusToolbox&trade;-ML configurator tool. Open the *design.mtbml* file and click **Validate on Target**. Select the KitProg COM port (ensure that no other software has the COM port open) and check the *Quantization* that matches the **NN_TYPE** set in the Makefile. Click **Validate**.
 
 5. If using the ModusToolbox&trade;-ML configurator tool, the results of the validation are printed on the tool's console. Log files for the profiling are stored in the following files (located at *`NN_MODEL_FOLDER`/info_target/* folder):
 
-   - *device_log.txt*: All messages exchanged between the configurator tool and the device.
-   - *profiler_frame_log.txt*: Per-frame profile information
-   - *profiler_info_log.txt*: Per-model profile information
-   - *profiler_output_log.txt*: Per-frame output log (not currently supported, but output log can be viewed in the *device_log.txt*).
-
+   - *device_log.txt*: all messages exchanged between the ML configurator tool and the device.
+   - *profiler_info_log.txt*: profile information, including CPU cycles
+   
    You can choose the type of profiling/debugging data to be printed by setting the `PROFILE_CONFIGURATION` macro in *main.c*.
+
+   - *MTB_ML_PROFILE_DISABLE*: Disables profiling feature
+   - *MTB_ML_PROFILE_ENABLE_MODEL*: Prints general CPU and/or NPU cycles profiling
+   - *MTB_ML_LOG_ENABLE_MODEL_LOG*: Prints model output values
 
    **Note:** Depending on the chosen quantization, validation results might return a failure if the accuracy is not greater than or equal to 98%.
 
@@ -225,16 +222,7 @@ In this example, you must provide a pre-trained NN model with the weights, regre
 
 If you change the output file location in the ModusToolbox&trade;-ML configurator tool, you must also reflect the change in the Makefile (the `NN_MODEL_FOLDER` parameter). The model data is stored as a header file or as a binary file (used for filesystem applications). This example uses header files. Depending the type of the NN model chosen in the Makefile (the `NN_TYPE` parameter), the application uses the files and variables from the following table, where (*KEY* is the output file prefix defined by the ModusToolbox&trade;-ML configurator tool):
 
-**Table 1. Inference Engine: ifx**
-
-| Folder name | File name | Variable name | Description |
-| :--------   | :-------- | :------------- | :------------ |
-| *mtb_ml_models* | *KEY_ifx_model_int16x16.h/c*<br>*KEY_ifx_model_int16x8.h/c*<br>*KEY_ifx_model_int8x8.h/c*<br>*KEY_ifx_model_float.h/c* | `KEY_model_prms_bin`<br>`KEY_model_bin` | Contains the NN parameters, weights and bias |
-| *mtb_ml_regression_data* | *KEY_ifx_x_data_int16x16.h/c*<br>*KEY_ifx_y_data_int16x16.h/c*<br>*KEY_ifx_x_data_int16x8.h/c*<br>*KEY_ifx_y_data_int16x8.h/c*<br>*KEY_ifx_x_data_int8x8.h/c*<br>*KEY_ifx_y_data_int8x8.h/c*<br>*KEY_ifx_x_data_float.h/c*<br>*KEY_ifx_y_data_float.h/c* |  `KEY_x_data_bin`<br>`KEY_y_data_bin` | Contains the input (x) and output (y) regression data |
-
-<br>
-
-**Table 2. Inference Engine: tflm**
+**Table 1. Inference Engine: tflm**
 
 | Folder name | File name | Variable name | Description |
 | :--------   | :-------- | :------------- | :------------ |
@@ -243,7 +231,7 @@ If you change the output file location in the ModusToolbox&trade;-ML configurato
 
 <br>
 
-**Table 3. Inference Engine: tflm_less**
+**Table 2. Inference Engine: tflm_less**
 
 | Folder name | File name | Variable name | Description |
 | :--------   | :-------- | :------------- | :------------ |
@@ -255,32 +243,26 @@ If you change the output file location in the ModusToolbox&trade;-ML configurato
 In the Makefile, set the `NN_MODEL_NAME` parameter based on the output file prefix chosen in the ModusToolbox&trade;-ML configurator tool.
 
 You can also change the type of inference engine to run by setting the `NN_INFERENCE_ENGINE` in the Makefile. We have three options:
-1) `ifx`: Infineon inference engine.
-2) `tflm`: TensorFlow Lite Micro inference engine with runtime interpreter
-3) `tflm_less`: TensorFlow Lite Micro inference engine without interpreter (interpreter-less)
-
-**Note:** If you are using TensorFlow Lite Micro, only *int8x8* and *float* `NN_TYPE` are supported.
+1) `tflm`: TensorFlow Lite Micro inference engine with runtime interpreter
+2) `tflm_less`: TensorFlow Lite Micro inference engine without interpreter (interpreter-less)
 
 After updating the Makefile, all the model files are built into the application automatically, allowing the NN inference engine to be initialized and fed with the regression data.
 
-This application has an option to choose the source of the regression data in the *main.c* file. You can set the `REGRESSION_DATA_SOURCE` to one of the following:
-   - `USE_STREAM_DATA` – Uses the ModusToolbox&trade;-ML Configurator tool to stream the regression data
-   - `USE_LOCAL_DATA` – Uses the files located in *mtb_ml_gen/mtb_ml_regression_data* for the regression data
+This application has an option to choose the source of the regression data in the *Makefile* file. You can set the `ML_VALIDATION_SOURCE` to one of the following:
+   - `stream` – Uses the ModusToolbox&trade;-ML Configurator tool to stream the regression data
+   - `local` – Uses the files located in *mtb_ml_gen/mtb_ml_regression_data* for the regression data
 
 **Note:** Some devices from the supported kits might not have enough memory to run some of the configurations above, specially if using local regression data. If that occurs, pick another kit with larger memory device, or refer to the ML user guide on how to define the `CY_ML_MODEL_MEM` macro.
 
-**Note:** When using a TFLM int8x8 model with local regression data, the output of the model is compared to quantized reference int8x8 model results. If using the streamed data, the output of the model is compared to a float reference model results. That means the accuracy results might differ between using local data and streamed data.
+**Note:** When using a TFLM int8x8/int16x8 model with local regression data, the output of the model is compared to quantized reference int8x8 model results. If using the streamed data, the output of the model is compared to a float reference model results. That means the accuracy results might differ between using local data and streamed data.
 
 The application also has an option to choose what type of profiling/debugging data to print/stream. You can set the `PROFILE_CONFIGURATION` to one of the following:
 
-   | Configuration | Description | Support |
-   | :--------   | :-------- | :------------- | 
-   | `MTB_ML_PROFILE_DISABLE` | Disable profiling | IFX, TFLM |
-   | `MTB_ML_PROFILE_ENABLE_MODEL` (default) | Enables model profiling | IFX, TFLM | 
-   | `MTB_ML_PROFILE_ENABLE_LAYER` | Enables per-layer profiling | IFX |
-   | `MTB_ML_PROFILE_ENABLE_MODEL_PER_FRAME` | Enables per-frame model profiling | IFX |
-   | `MTB_ML_PROFILE_ENABLE_LAYER_PER_FRAME` | Enables per-frame layer profiling | IFX |
-   | `MTB_ML_LOG_ENABLE_MODEL_LOG` | Enables model output | IFX, TFLM
+   | Configuration | Description | 
+   | :--------   | :-------- | 
+   | `MTB_ML_PROFILE_DISABLE` | Disable profiling | 
+   | `MTB_ML_PROFILE_ENABLE_MODEL` (default) | Enables model profiling |
+   | `MTB_ML_LOG_ENABLE_MODEL_LOG` | Enables model output |
 
 If using the local regression data, the application automatically loads the regression data generated by the ML configurator tool. The regression data consists of a collection of inputs (X) and a collection of outputs (Y). Once the inference engine processes X, it outputs the result. Then, the firmware compares the result with the desired value, Y. If these match, the firmware contributes to the accuracy calculation.
 
@@ -296,16 +278,16 @@ If using the ModusToolbox&trade;-ML configurator tool, the same regression data 
 ```
 |-- mtb_ml_gen/               # Contains the model and regression files
 |-- pretrained_models/        # Contains the Keras-H5 and TFlite models (used by the ML configurator tool)
-|-- test_data/                # Contains a CSV file with the test data
+|-- sample_data/              # Contains a CSV file with the test and calibration data
 |-- source                    # Contains the source code files for this example
    |- elapsed_timer.c/h       # Implements a system tick timer
-   |- ml_local_regression.c/h # Implements a local regression flow
+   |- ml_validation.c/h       # Implements a local regression flow
 |-- design.mtbml              # ModusToolbox&trade;-ML configurator tool project file
 ```
 
 ### Resources and settings
 
-**Table 4. Application resources**
+**Table 3. Application resources**
 
 | Resource  |  Alias/object     |    Purpose     |
 | :------- | :------------    | :------------ |
@@ -345,6 +327,7 @@ Document title: *CE232551* - *Machine learning: Neural network profiler*
 | 3.0.0   | Major update to support ModusToolbox&trade; v3.0. This version is not backward compatible with previous versions of ModusToolbox&trade;. <br> Updated to support TFLM |
 | 3.1.0   | Added more information about profile configuration <br> Added IAR compiler limitation note <br> Added memory limitation note for some devices |
 | 3.1.2   | Added Makefile variable to support only GCC_ARM and ARM compilers |
+| 3.2.0   | Removed support to IFX inference engine <br> Updated code to use Machine Learning Pack 3.0.0 |
 
 <br />
 

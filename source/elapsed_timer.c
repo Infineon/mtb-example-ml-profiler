@@ -7,7 +7,7 @@
 *
 *
 *******************************************************************************
-* Copyright 2021-2024, Cypress Semiconductor Corporation (an Infineon company) or
+* Copyright 2023-2025, Cypress Semiconductor Corporation (an Infineon company) or
 * an affiliate of Cypress Semiconductor Corporation.  All rights reserved.
 *
 * This software, including source code, documentation and related
@@ -38,44 +38,64 @@
 * of such system or application assumes all risk of such use and in doing
 * so agrees to indemnify Cypress against all liability.
 *******************************************************************************/
+#include <stdio.h>
+
+#include "cybsp.h"
+#include "cy_pdl.h"
+
 #include "elapsed_timer.h"
-#include "cyhal.h"
-
-/*******************************************************************************
-* Typedefs
-*******************************************************************************/
-
 
 /*******************************************************************************
 * Constants
 *******************************************************************************/
-
+#define SYSTICK_MAX_CNT (0xFFFFFF)
+#define RESET_VAL       (0u)
 
 /*******************************************************************************
 * Global Variables
 *******************************************************************************/
 /* System Tick overflow counter */
-static volatile uint32_t elapsed_timer_ov = 0;
+static volatile uint64_t elapsed_timer_ov = RESET_VAL;
 
 /*******************************************************************************
-* Local Functions
+* Function Name: elapsed_timer_callback
+********************************************************************************
+* Summary:
+* This is the callback implementation for the elapsed timer. It increments an
+* internal counter;
+*
+* Paramters:
+*   void
+*
+* Return:
+*   void
+*
 *******************************************************************************/
-void elapsed_timer_callback(void);
+static void elapsed_timer_callback(void)
+{
+    elapsed_timer_ov++;  
+}
 
 /*******************************************************************************
 * Function Name: elapsed_timer_init
 ********************************************************************************
 * Summary:
-*   Initialize the elapsed system tick timer. 
+*   Initialize the elapsed system tick timer.
+*
+* Parameters:
+*   void
 *
 * Return:
-*   The status of the initialization.
+*   cy_rslt_t: the status of the initialization.
+*
 *******************************************************************************/
 cy_rslt_t elapsed_timer_init(void)
 {
     /* Initialize the System Tick */
-    Cy_SysTick_Init(CY_SYSTICK_CLOCK_SOURCE_CLK_CPU, 0xFFFFFFUL);
+    Cy_SysTick_Init(CY_SYSTICK_CLOCK_SOURCE_CLK_CPU, SYSTICK_MAX_CNT);
     Cy_SysTick_SetCallback(0, elapsed_timer_callback);
+
+    elapsed_timer_ov = RESET_VAL;
 
     return CY_RSLT_SUCCESS;
 }
@@ -86,26 +106,17 @@ cy_rslt_t elapsed_timer_init(void)
 * Summary:
 *   Return the current tick (number of CPU cycles) since the timer was started.
 *
+* Parameters:
+*   tick: current number of ticks.
+*
 * Return:
-*   The status of the operation
+*   int: the status of the operation.
+*
 *******************************************************************************/
-int elapsed_timer_get_tick(uint32_t *tick)
+int elapsed_timer_get_tick(uint64_t *tick)
 {
-    *tick = (0xFFFFFF - Cy_SysTick_GetValue()) + (elapsed_timer_ov * 0x1000000);
+    *tick = (SYSTICK_MAX_CNT - (uint64_t) Cy_SysTick_GetValue()) + (elapsed_timer_ov * (SYSTICK_MAX_CNT+1));
     
     return CY_RSLT_SUCCESS;
 }
 
- /*******************************************************************************
-* Function Name: elapsed_timer_callback
-********************************************************************************
-* Summary:
-* This is the callback implementation for the elapsed timer. It increments an
-* internal counter;
-*
-*
-*******************************************************************************/
-void elapsed_timer_callback(void)
-{
-    elapsed_timer_ov++;  
-}
